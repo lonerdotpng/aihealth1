@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthVisor - AI Health & Mental Wellness</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .mobile-nav-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+        }
+
+        .mobile-nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 10px;
+            margin: 0 5px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .mobile-nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .mobile-nav-item .icon {
+            font-size: 1.5em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .mobile-nav-item .label {
+            font-size: 0.85em;
+        }
+
+        /* Page Container */
+        .pages-container {
+            margin-top: 70px;
+            position: relative;
+        }
+
+        .page {
+            width: 100%;
+            min-height: calc(100vh - 70px);
+            padding: 20px;
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 900px;
+            background: rgb(255, 255, 255);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+            font-family: 'Courgette', 'Comic Sans MS', cursive;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        /* Health Plan Page Styles */
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #747272;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-section {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 10px solid #667eea;
+        }
+
+        .result-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .result-section p,
+        .result-section ul {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .result-section ul {
+            margin-left: 20px;
+        }
+
+        .result-section li {
+            margin-bottom: 10px;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #c00;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #c00;
+            display: none;
+        }
+
+        .disclaimer {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        .disclaimer strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Chat Page Styles */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 200px);
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            line-height: 1.6;
+        }
+
+        .message.bot .message-content {
+            background: #f0f4ff;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-input-container {
+            padding: 20px 30px;
+            border-top: 2px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            padding: 15px 30px;
+            border-radius: 25px;
+
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .overlay-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .overlay-content h2 {
+            color: #c00;
+            margin-bottom: 20px;
+        }
+
+        .overlay-content p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .accept-btn {
+            background: #c00;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .accept-btn:hover {
+            background: #a00;
+        }
+
+
+        .about {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #432b5c 100%);
+            padding: 20px;
+            height: 30%;
+            width: 28%;
+            border-radius: 10px;
+            z-index: 99;
+            justify-items: center;
+        }
+
+
+        .about h1 {
+            color: white;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.5em;
+            text-transform: capitalize;
+        }
+
+        .ab-button {
+            position: absolute;
+            bottom: 20px;
+            background: rgb(44, 56, 107);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: underline;
+            width: 40%;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-transform: uppercase;
+            right: 35%;
+
+        }
+
+        .ab-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .about a {
+            color: white;
+        }
+
+        .about img {
+            width: 150px;
+            height: auto;
+            display: block;
+            padding: 5px;
+            right: -10px;
+            position: absolute;
+            top: 80px;
+        }
+
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+
+            /* Hide warning overlay on mobile */
+            .overlay {
+                display: none !important;
+            }
+
+            /* Hide desktop nav menu, show mobile nav */
+            .nav-menu {
+                display: none;
+            }
+
+            .about {
+                display: none;
+            }
+
+            .mobile-nav {
+                display: block;
+            }
+
+            /* Adjust page container for mobile nav */
+            .pages-container {
+                margin-top: 60px;
+                margin-bottom: 0;
+                padding-bottom: 80px;
+                /* Space for bottom nav */
+            }
+
+            .page {
+                min-height: calc(100vh - 140px);
+                padding: 10px;
+            }
+
+            /* Adjust logo size */
+            .logo {
+                font-size: 1.4em;
+            }
+
+            .nav-container {
+                padding: 0 15px;
+            }
+
+            /* Container adjustments */
+            .container {
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header p {
+                font-size: 0.95em;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            /* Form adjustments */
+            .input-section {
+                margin-bottom: 20px;
+            }
+
+            label {
+                font-size: 1em;
+            }
+
+            input,
+            textarea,
+            select {
+                padding: 10px;
+                font-size: 0.95em;
+            }
+
+            button {
+                padding: 12px 30px;
+                font-size: 1em;
+                width: 100%;
+            }
+
+            /* Results section */
+            .result-section {
+                padding: 15px;
+                border-left-width: 5px;
+            }
+
+            .result-section h2 {
+                font-size: 1.2em;
+            }
+
+            .result-section p,
+            .result-section ul {
+                font-size: 0.95em;
+            }
+
+            /* Chat adjustments */
+            .chat-container {
+                height: calc(100vh - 260px);
+            }
+
+            .chat-messages {
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .message-content {
+                max-width: 85%;
+                padding: 12px 15px;
+                font-size: 0.95em;
+            }
+
+            .message-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 1em;
+            }
+
+            .chat-input-container {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .chat-input {
+                padding: 12px 15px;
+                font-size: 0.95em;
+            }
+
+            .send-btn {
+                padding: 12px 20px;
+                font-size: 0.95em;
+                width: auto;
+            }
+
+            /* Disclaimer adjustments */
+            .disclaimer {
+                padding: 12px;
+                font-size: 0.85em;
+                margin-top: 70px;
+            }
+
+            /* Overlay adjustments */
+            .overlay-content {
+                margin: 20px;
+                padding: 25px 20px;
+                max-width: calc(100% - 40px);
+            }
+
+            .overlay-content h2 {
+                font-size: 1.3em;
+            }
+
+            .overlay-content p {
+                font-size: 0.95em;
+            }
+        }
+
+        @media screen and (min-width: 769px) {
+            .hamburger {
+                display: none;
+            }
+        }
+
+        .hamburger {
+            position: fixed;
+            cursor: pointer;
+            right: 20px;
+            top: 10px;
+            z-index: 2000;
+        }
+
+        .hamburger input {
+            display: none;
+        }
+
+        .hamburger svg {
+            height: 3em;
+            transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .line {
+            fill: none;
+            stroke: grey;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 3;
+            transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+                stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .line-top-bottom {
+            stroke-dasharray: 12 63;
+        }
+
+        .hamburger input:checked+svg {
+            transform: rotate(-45deg);
+        }
+
+        .hamburger input:checked+svg .line-top-bottom {
+            stroke-dasharray: 20 300;
+            stroke-dashoffset: -32.42;
+        }
+
+        .dashboard-header {
+            width: 100%;
+            height: 60px;
+            background-color: #282936;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            color: rgb(91 33 182);
+            font-size: 1.2rem;
+            z-index: 1000;
+        }
+
+        .dashboard-content {
+            border-top-left-radius: 20px;
+            visibility: hidden;
+            opacity: 0;
+            width: 75%;
+            height: 100%;
+            position: fixed;
+            top: 60px;
+            right: 0;
+            background-color: #f1f0f0;
+            color: rgb(91 33 182);
+            overflow: auto;
+            z-index: 1001;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .dashboard-content.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .dashboard-content h2 {
+            margin-top: 0;
+        }
+
+        /* Extra small devices */
+        @media screen and (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .header p {
+                font-size: 0.9em;
+            }
+
+            .logo {
+                font-size: 1.2em;
+            }
+
+            .result-section h2 {
+                font-size: 1.1em;
+            }
+
+            .mobile-nav-item .icon {
+                font-size: 1.3em;
+            }
+
+            .mobile-nav-item .label {
+                font-size: 0.75em;
+            }
+        }
+
+        /* Add these styles inside your existing <style> tag */
+        .dashboard-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .dashboard-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .dashboard-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            color: #555;
+        }
+
+        .dashboard-list li:last-child {
+            border-bottom: none;
+        }
+
+        .news-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .news-item {
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .news-item h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .news-item p {
+            color: #555;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .news-item .date {
+            font-size: 0.8em;
+            color: #888;
+            display: block;
+        }
+
+        @media screen and (max-width: 768px) {
+            .dashboard-content {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .dashboard-section {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="warningOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2>⚠️ Important Medical Warning</h2>
+            <p>This application provides general health and wellness information only. It is not a substitute for
+                professional medical advice, diagnosis, or treatment.</p>
+            <p>By continuing to use this application, you acknowledge that you should always consult with qualified
+                healthcare providers before making any changes to your medication.</p>
+            <button class="accept-btn" onclick="closeWarning()">I Understand</button>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">HealthVisor</div>
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="switchPage('health')">💖 Health Plans</div>
+                <div class="nav-item" onclick="switchPage('chat')">💬 Mental Health Helper</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-container">
+            <div class="mobile-nav-item active" onclick="switchPage('health')">
+                <span class="icon">💖</span>
+                <span class="label">Health Plans</span>
+            </div>
+            <div class="mobile-nav-item" onclick="switchPage('chat')">
+                <span class="icon">💬</span>
+                <span class="label">Mental Health</span>
+            </div>
+        </div>
+    </div>
+    <!-- Hamburger Menu -->
+    <label class="hamburger">
+        <input type="checkbox" id="hamburger-toggle">
+        <svg viewBox="0 0 32 32">
+            <path class="line line-top-bottom"
+                d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22">
+            </path>
+            <path class="line" d="M7 16 27 16"></path>
+        </svg>
+    </label>
+
+
+
+
+    <!-- Dashboard Content -->
+  <div class="dashboard-content" id="dashboard-content">
+        <a href="/about" style="text-decoration: none;"><div class="dashboard-section">
+            <h2>More on student health</h2>
+        </div></a>
+        
+         <a href="/news" style="text-decoration: none;"><div class="dashboard-section">
+            <h2>News</h2>
+           
+        </div></a>
+    </div>
+
+
+    <div class="pages-container" id="pagesContainer">
+        <!-- Health Plan Page -->
+        <div class="page active" id="healthPage">
+            <div class="container">
+                <div class="header">
+                    <h1>healthvisor</h1>
+                    <p>Get personalized diet plans, exercises, and health advice</p>
+                </div>
+
+                <div class="content">
+                    <form id="healthForm">
+                        <div class="input-section">
+                            <label for="disease">Health Condition or Disease *</label>
+                            <input type="text" id="disease" placeholder="e.g., Diabetes, Obesity" required>
+                        </div>
+
+                        <div class="input-section">
+                            <label for="additionalInfo">Additional Information (Optional)</label>
+                            <textarea id="additionalInfo"
+                                placeholder="Age, weight, current medications, etc."></textarea>
+                        </div>
+
+                        <button type="submit" id="submitBtn">Generate Health Plan</button>
+                    </form>
+
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Generating your personalized health plan...</p>
+                    </div>
+
+                    <div class="error" id="error"></div>
+
+                    <div class="results" id="results"></div>
+
+                    <div class="disclaimer">
+                        <strong>⚠️ Important Medical Disclaimer:</strong>
+                        This tool provides general wellness information only and is not a substitute for professional
+                        medical advice, diagnosis, or treatment. Always consult with qualified healthcare providers
+                        before making any changes to your diet, exercise routine, or medication.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Mental Health Chat Page -->
+        <div class="page" id="chatPage">
+            <div class="container">
+                <div class="header">
+                    <h1>mental wellness corner</h1>
+                    <p>Talk to your own AI mental health support assistant</p>
+                </div>
+
+                <div class="content">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message bot">
+                                <div class="message-avatar">🧠</div>
+                                <div class="message-content">
+                                    Hello! I'm here to support your mental wellness journey. Feel free to share what's
+                                    on your mind, discuss your feelings, or ask for coping strategies. Remember, I'm
+                                    here to listen without judgment. How are you feeling today?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message here..."
+                                onkeypress="handleChatKeypress(event)">
+                            <button class="send-btn" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="about">
+        <h1>find out more on student health</h1>
+        <img draggable="false" src="/assets/r1.png" alt="Health illustration">
+        <a href="/about" class="ab-button">here📌</a>
+    </div>
+    <script>// api key 
+    const GEMINI_API_KEY = '<%= GEMINI_API_KEY %>';
+
+        document.getElementById('hamburger-toggle').addEventListener('change', function () {
+            const dashboardContent = document.getElementById('dashboard-content');
+            if (this.checked) {
+                dashboardContent.classList.add('visible');
+            } else {
+                dashboardContent.classList.remove('visible');
+            }
+        });
+        
+        
+
+        function closeWarning() {
+            document.getElementById('warningOverlay').style.display = 'none';
+        }
+
+        // Navigation
+        function switchPage(page) {
+            const healthPage = document.getElementById('healthPage');
+            const chatPage = document.getElementById('chatPage');
+            const desktopNavItems = document.querySelectorAll('.nav-item');
+            const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+
+            // Remove active class from all nav items
+            desktopNavItems.forEach(item => item.classList.remove('active'));
+            mobileNavItems.forEach(item => item.classList.remove('active'));
+
+            // Hide all pages
+            healthPage.classList.remove('active');
+            chatPage.classList.remove('active');
+
+            if (page === 'health') {
+                healthPage.classList.add('active');
+                desktopNavItems[0]?.classList.add('active');
+                mobileNavItems[0]?.classList.add('active');
+            } else if (page === 'chat') {
+                chatPage.classList.add('active');
+                desktopNavItems[1]?.classList.add('active');
+                mobileNavItems[1]?.classList.add('active');
+            }
+        }
+
+        // ==================== HEALTH PLAN PAGE LOGIC ====================
+        const form = document.getElementById('healthForm');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const error = document.getElementById('error');
+        const submitBtn = document.getElementById('submitBtn');
+
+        async function callGeminiAPI(apiKey, disease, additionalInfo) {
+            const prompt = createPrompt(disease, additionalInfo);
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 2048,
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || 'Gemini API request failed');
+            }
+
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const disease = document.getElementById('disease').value.trim();
+            const additionalInfo = document.getElementById('additionalInfo').value.trim();
+
+            if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
+                showError('Please add your Gemini API key in the code.');
+                return;
+            }
+
+            error.style.display = 'none';
+            results.style.display = 'none';
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await callGeminiAPI(GEMINI_API_KEY, disease, additionalInfo);
+                displayResults(response);
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function createPrompt(disease, additionalInfo) {
+            return `Please provide a comprehensive health management plan for someone with ${disease} and make the output short and crisp.
+
+${additionalInfo ? `Additional context: ${additionalInfo}\n` : ''}
+
+Structure your response with these sections:
+**Overview**
+**Diet Plan**
+**Exercise Recommendations**
+**Lifestyle Advice**
+**Important Considerations**
+
+Keep it concise and practical.`;
+        }
+
+        function displayResults(content) {
+            const sections = parseContent(content);
+
+            let html = '';
+            for (const [title, text] of Object.entries(sections)) {
+                html += `
+                    <div class="result-section">
+                        <h2>${title}</h2>
+                        <div>${formatText(text)}</div>
+                    </div>
+                `;
+            }
+
+            results.innerHTML = html;
+            results.style.display = 'block';
+            results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function parseContent(content) {
+            const sections = {};
+            const lines = content.split('\n');
+            let currentSection = 'General Information';
+            let currentContent = [];
+
+            for (const line of lines) {
+                if (line.match(/^#+\s+/) || line.match(/^\*\*[^*]+\*\*:?$/)) {
+                    if (currentContent.length > 0) {
+                        sections[currentSection] = currentContent.join('\n');
+                    }
+                    currentSection = line.replace(/^#+\s+/, '').replace(/^\*\*/, '').replace(/\*\*:?$/, '').trim();
+                    currentContent = [];
+                } else if (line.trim()) {
+                    currentContent.push(line);
+                }
+            }
+
+            if (currentContent.length > 0) {
+                sections[currentSection] = currentContent.join('\n');
+            }
+
+            return sections;
+        }
+
+        function formatText(text) {
+            text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+            const lines = text.split('\n');
+            let formatted = '';
+            let inList = false;
+
+            for (let line of lines) {
+                line = line.trim();
+                if (line.match(/^[-*]\s+/) || line.match(/^\d+\.\s+/)) {
+                    if (!inList) {
+                        formatted += '<ul>';
+                        inList = true;
+                    }
+                    formatted += `<li>${line.replace(/^[-*]\s+/, '').replace(/^\d+\.\s+/, '')}</li>`;
+                } else {
+                    if (inList) {
+                        formatted += '</ul>';
+                        inList = false;
+                    }
+                    if (line) {
+                        formatted += `<p>${line}</p>`;
+                    }
+                }
+            }
+
+            if (inList) {
+                formatted += '</ul>';
+            }
+
+            return formatted;
+        }
+
+        function showError(message) {
+            error.textContent = `Error: ${message}`;
+            error.style.display = 'block';
+            error.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ==================== MENTAL HEALTH CHAT LOGIC ====================
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
+                addMessage('Please add your Gemini API key in the code to use the chat feature.', 'bot');
+                return;
+            }
+
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = '<div class="message-avatar">🧠</div><div class="message-content">Typing...</div>';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await callGeminiChat(message);
+                document.getElementById('typing-indicator').remove();
+                addMessage(response, 'bot');
+            } catch (err) {
+                document.getElementById('typing-indicator')?.remove();
+
+                let errorMessage = 'I apologize, but I encountered an error connecting to the service. ';
+
+                if (err.message.includes('Failed to fetch')) {
+                    errorMessage += 'This might be a network issue. Please make sure you\'re running this file through a web server (not opening it directly). Try using: python -m http.server or a VS Code Live Server extension.';
+                } else if (err.message.includes('API_KEY_INVALID')) {
+                    errorMessage += 'Your API key appears to be invalid. Please check and update it.';
+                } else {
+                    errorMessage += 'Error: ' + err.message;
+                }
+
+                addMessage(errorMessage, 'bot');
+                console.error('Chat error:', err);
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'bot' ? '🧠' : '👤';
+
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = text;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            chatMessages.appendChild(messageDiv);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function callGeminiChat(userMessage) {
+            const fullPrompt = `You are a compassionate and supportive mental health assistant. Your role is to listen empathetically, provide emotional support, suggest healthy coping strategies, and encourage professional help when needed. Never provide medical diagnoses. Be warm, understanding, and patient. Keep responses concise (2-4 sentences) and supportive and try to give solution to the problems given.
+
+User: ${userMessage}
+
+Response:`;
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: fullPrompt
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.8,
+                            maxOutputTokens: 500,
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('API Error:', errorData);
+                    throw new Error(errorData.error?.message || `API returned status ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                    throw new Error('Invalid response format from API');
+                }
+
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error('Fetch error details:', error);
+                throw error;
+            }
+        }
+    </script>
+</body>
+
+</html>
