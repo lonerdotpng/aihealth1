@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Health & Wellness - HealthVisor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        }
+
+        .back-btn {
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 70px;
+            padding: 60px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3em;
+            font-family: 'Courgette', 'Comic Sans MS', cursive;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+
+        /* Main Content */
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Section Styles */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section:nth-child(even) {
+            animation-delay: 0.1s;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section-icon {
+            font-size: 2.5em;
+            background-clip: text;
+        }
+
+        .section-header h2 {
+            font-size: 2em;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .section-content {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .section-content p {
+           left: 10px;
+           color: #667eea;
+           text-align: center;
+           font-size: 20px;
+           top: 10px;
+           position: relative;
+        }
+
+        .section-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .section-content li {
+            margin-bottom: 12px;
+            padding-left: 10px;
+        }
+
+        .section-content strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Update the first section content styles */
+        .section:first-child .section-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
+        .section:first-child .section-content .r2 {
+            max-width: 300px;
+            height: auto;
+            border-radius: 15px;
+       
+            position: static;
+            flex-shrink: 0;
+        }
+
+        .section:first-child .section-content p {
+            margin: 0;
+            flex: 1;
+            position: static;
+            text-align: left;
+        }
+
+        /* Add this to your existing styles section */
+        .section:last-child .section-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
+        .section:last-child .section-content .r3 {
+            max-width: 300px;
+            height: auto;
+            border-radius: 15px;
+            position: static;
+            flex-shrink: 0;
+        }
+
+        .section:last-child .section-content p,
+        .section:last-child .section-content ul {
+            margin: 0;
+            flex: 1;
+            position: static;
+            text-align: left;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Tips Grid */
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .tip-card {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .tip-card:hover {
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .tip-card h3 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        .tip-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            display: flex;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .warning-icon {
+            font-size: 2.5em;
+            flex-shrink: 0;
+        }
+
+        .warning-content h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .warning-content p {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        /* Resources Section */
+        .resource-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin: 10px 10px 10px 0;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .resource-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            text-align: center;
+            margin-top: 50px;
+            color: #666;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .footer strong {
+            color: #667eea;
+        }
+           
+        .r2 {
+            position: reletive;
+            left: 50%;
+        }
+
+    
+
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .hero p {
+                font-size: 1.1em;
+            }
+
+            .section {
+                padding: 25px 20px;
+            }
+
+            .section-header h2 {
+                font-size: 1.5em;
+            }
+
+            .section-icon {
+                font-size: 2em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-number {
+                font-size: 2.5em;
+            }
+
+            .warning-box {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-container {
+                padding: 0 15px;
+            }
+
+            .logo {
+                font-size: 1.4em;
+            }
+
+            /* Add mobile responsiveness for first section */
+            .section:first-child .section-content {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section:first-child .section-content .r2 {
+                width: 100%;
+                max-width: 300px;
+                margin-bottom: 20px;
+            }
+
+            .section:first-child .section-content p {
+                text-align: center;
+            }
+
+            /* Add mobile responsiveness for last section */
+            .section:last-child .section-content {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section:last-child .section-content .r3 {
+                width: 100%;
+                max-width: 300px;
+                margin-bottom: 20px;
+            }
+
+            .section:last-child .section-content p,
+            .section:last-child .section-content ul {
+                text-align: center;
+            }
+        }
+
+         
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">HealthVisor</div>
+            <a href="/home" class="back-btn">← Back to Home</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Student Health & Wellness</h1>
+    </div>
+
+    <div class="content-container">
+        <!-- Introduction Section -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">❓</span>
+                <h2>Why Student Health Matters-</h2>
+            </div>
+            <div class="section-content"><img draggable="FLASE" src="/assets/r2.png" class="r2">
+                <p>Student life is a unique period filled with academic challenges, social transitions, and personal
+                    growth. During this critical phase, maintaining both physical and mental health is essential for
+                    academic success and overall well-being. <br><br>
+                Research shows that students who prioritize their health perform better academically, build stronger
+                    relationships, and develop lifelong healthy habits. However, many students face significant health
+                    challenges due to stress, irregular schedules, poor nutrition, and limited physical activity.</p>
+            </div>
+        </div>
+
+       <div class="section">
+    <div class="section-header">
+
+        <h2>Student Health Challenges</h2>
+    </div>
+    <div class="section-content">
+        <p>Research shows that many students face significant health challenges during their academic journey, including stress, anxiety, sleep deprivation, and irregular eating habits. These challenges can impact both academic performance and overall well-being.</p>
+    </div>
+</div>
+
+        <!-- Physical Health Section -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">💪</span>
+                <h2>Physical Health for Students</h2>
+            </div>
+            <div class="section-content">
+                <p>Physical health forms the foundation of a student's ability to learn, focus, and thrive. Poor
+                    physical health can lead to decreased energy, concentration problems, and increased susceptibility
+                    to illness.</p>
+
+                <h3 style="color: #667eea; margin: 25px 0 15px 0; font-size: 1.4em;">Common Physical Health Challenges:
+                </h3>
+                <ul>
+                    <li><strong>Sleep Deprivation:</strong> Late-night studying, social activities, and screen time
+                        often result in inadequate sleep, affecting memory, mood, and immune function.</li>
+                    <li><strong>Poor Nutrition:</strong> Reliance on fast food, skipping meals, and irregular eating
+                        patterns can lead to nutrient deficiencies and energy crashes.</li>
+                    <li><strong>Sedentary Lifestyle:</strong> Long hours of sitting in classes and studying can
+                        contribute to weight gain, poor posture, and cardiovascular issues.</li>
+                    <li><strong>Stress-Related Illness:</strong> Chronic stress weakens the immune system, making
+                        students more vulnerable to colds, flu, and other infections.</li>
+                </ul>
+
+                <h3 style="color: #667eea; margin: 25px 0 15px 0; font-size: 1.4em;">Key Physical Health Tips:</h3>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h3>😴 Prioritize Sleep</h3>
+                        <p>Aim for 7-9 hours of quality sleep. Maintain a consistent sleep schedule and create a
+                            relaxing bedtime routine.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>🥗 Eat Balanced Meals</h3>
+                        <p>Include fruits, vegetables, whole grains, and proteins. Stay hydrated and limit caffeine and
+                            sugar intake.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>🏃 Stay Active</h3>
+                        <p>Exercise for at least 30 minutes daily. Take study breaks to stretch and walk around campus.
+                        </p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>🩺 Regular Check-ups</h3>
+                        <p>Visit campus health services for routine check-ups and don't ignore persistent symptoms.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>💧 Stay Hydrated</h3>
+                        <p>Drink 8-10 glasses of water daily. Carry a reusable water bottle to classes and study
+                            sessions.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>🧼 Practice Hygiene</h3>
+                        <p>Wash hands regularly, especially during flu season. Maintain good personal hygiene habits.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mental Health Section -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">🧠</span>
+                <h2>Mental Health for Students</h2>
+            </div>
+            <div class="section-content">
+                <p>Mental health is just as important as physical health. Students face unique mental health challenges
+                    including academic pressure, financial stress, social isolation, and uncertainty about the future.
+                </p>
+
+                <h3 style="color: #667eea; margin: 25px 0 15px 0; font-size: 1.4em;">Common Mental Health Challenges:
+                </h3>
+                <ul>
+                    <li><strong>Academic Stress:</strong> Pressure to maintain grades, meet deadlines, and succeed can
+                        lead to overwhelming anxiety and burnout.</li>
+                    <li><strong>Social Anxiety:</strong> Making new friends, fitting in, and navigating relationships
+                        can be emotionally challenging.</li>
+                    <li><strong>Depression:</strong> Feelings of sadness, hopelessness, or loss of interest in
+                        activities are common but often go unaddressed.</li>
+                    <li><strong>Imposter Syndrome:</strong> Many students feel they don't deserve their achievements or
+                        belong in their academic environment.</li>
+                    <li><strong>Loneliness:</strong> Being away from family and struggling to build connections can lead
+                        to feelings of isolation.</li>
+                </ul>
+
+                <h3 style="color: #667eea; margin: 25px 0 15px 0; font-size: 1.4em;">Mental Wellness Strategies:</h3>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h3>🗣️ Talk About It</h3>
+                        <p>Share your feelings with trusted friends, family, or counselors. You're not alone in your
+                            struggles.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>🧘 Practice Mindfulness</h3>
+                        <p>Try meditation, deep breathing, or yoga to reduce stress and improve mental clarity.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>📅 Manage Time Wisely</h3>
+                        <p>Create realistic schedules, break tasks into smaller steps, and avoid procrastination.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>🎯 Set Boundaries</h3>
+                        <p>Learn to say no to excessive commitments. Balance academics with self-care and leisure.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>🤝 Build Support Networks</h3>
+                        <p>Join clubs, study groups, or support communities. Connect with people who understand you.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>💚 Seek Professional Help</h3>
+                        <p>Don't hesitate to use campus counseling services or mental health hotlines when needed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warning Section -->
+        <div class="warning-box">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-content">
+                <h3>When to Seek Immediate Help</h3>
+                <p>If you or someone you know is experiencing thoughts of self-harm, suicide, severe depression, or any
+                    mental health crisis, please reach out immediately to:</p>
+                <ul style="margin-top: 15px;">
+                    <li><strong>Emergency Services:</strong> Call 911 (or local emergency number)</li>
+                    <li><strong>National Suicide Prevention Lifeline:</strong> 988 (US)</li>
+                    <li><strong>Campus Counseling Center:</strong> Contact your school's mental health services</li>
+                    <li><strong>Crisis Text Line:</strong> Text "HELLO" to 741741</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Resources Section -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">🔗</span>
+                <h2>Helpful Resources</h2>
+            </div>
+            <div class="section-content">
+                <p>Here are some valuable resources for student health and wellness:</p>
+                <div style="margin-top: 20px;">
+                    <a href="https://www.who.int/health-topics/mental-health" target="_blank" class="resource-link">WHO
+                        Mental Health</a>
+                    <a href="https://www.nimh.nih.gov/health/topics/anxiety-disorders" target="_blank"
+                        class="resource-link">NIMH - Anxiety Resources</a>
+                    <a href="https://www.cdc.gov/healthyschools/index.htm" target="_blank" class="resource-link">CDC
+                        Healthy Schools</a>
+                    <a href="https://www.samhsa.gov/find-help" target="_blank" class="resource-link">SAMHSA Help</a>
+                    <a href="https://www.activeminds.org/" target="_blank" class="resource-link">Active Minds</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Steps Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Take Action Today</h2>
+            </div>
+            <div class="section-content">
+                <img draggable="FALSE" src="/assets/r3.png" class="r3">
+                <div>
+                    <p>Small steps can make a big difference in your health and well-being. Here's what you can do today:</p>
+                    <ul>
+                        <li>Schedule a check-up with your campus health center</li>
+                        <li>Download a meditation or sleep tracking app</li>
+                        <li>Plan healthy meals for the week</li>
+                        <li>Join a sports club or fitness class</li>
+                        <li>Reach out to a friend you haven't talked to in a while</li>
+                        <li>Create a realistic study schedule that includes breaks</li>
+                        <li>Set a consistent sleep schedule starting tonight</li>
+                        <li>Write down three things you're grateful for</li>
+                    </ul>
+                    <p style="margin-top: 20px;"><strong>Remember:</strong> Your health is your most valuable asset. Investing in it now will benefit you for years to come.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>HealthVisor</strong> - Your Partner in Health & Wellness</p>
+        <p>This information is for educational purposes only and is not a substitute for professional medical advice.
+        </p>
+        <p>&copy; 2024 HealthVisor. All rights reserved.</p>
+    </div>
+</body>
+
+</html>
