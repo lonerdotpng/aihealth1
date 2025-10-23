@@ -1,51 +1,47 @@
 import express from "express";
 import ejs from "ejs";
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use('/assets', express.static('assets'));
+// Serve static files
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 app.get('/', (_, res) => {
-  res.send("/home to view the homepage");
-})
+    res.send("/home to view the homepage");
+});
 
 app.get('/home', (_, res) => {
-  ejs.renderFile('views/index.ejs', { 
-    title: 'homepage',
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY 
-  }, (err, str) => {
-    if (err) {
-      res.status(500).send('Error rendering template');
-    } else {
-      res.send(str);
+    try {
+        res.render('index', {
+            title: 'homepage',
+            GEMINI_API_KEY: process.env.GEMINI_API_KEY
+        });
+    } catch (err) {
+        console.error('Rendering error:', err);
+        res.status(500).send('Error rendering template');
     }
-  });
 });
 
 app.get('/about', (_, res) => {
-  ejs.renderFile('views/about.ejs', { title: 'about' }, (err, str) => {
-    if (err) {
-      res.status(500).send('Error rendering template');
-    } else {
-      res.send(str);
+    try {
+        res.render('about', { title: 'about' });
+    } catch (err) {
+        console.error('Rendering error:', err);
+        res.status(500).send('Error rendering template');
     }
-  });
-});
-
-app.get('/:slug', (req, res) => {
-  ejs.renderFile('views/404.ejs', {}, (err, str) => {
-    if (err) {
-      res.status(500).send('Error ');
-    } else {
-      res.status(404).send(str);
-    }
-  });
 });
 
 app.listen(port, () => {
-  console.log(`local app listening on port ${port}`);
+    console.log(`local app listening on port ${port}`);
 });
