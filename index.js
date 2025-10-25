@@ -25,7 +25,8 @@ app.get('/home', (_, res) => {
     try {
         res.render('index', {
             title: 'homepage',
-            GEMINI_API_KEY: process.env.GEMINI_API_KEY
+            GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+            NEWS_API_KEY: process.env.NEWS_API_KEY
         });
     } catch (err) {
         console.error('Rendering error:', err);
@@ -36,6 +37,19 @@ app.get('/home', (_, res) => {
 app.get('/about', (_, res) => {
     try {
         res.render('about', { title: 'about' });
+    } catch (err) {
+        console.error('Rendering error:', err);
+        res.status(500).send('Error rendering template');
+    }
+});
+
+app.get('/NEWS', (_, res) => {
+    try {
+        res.render('NEWS', {
+            title: 'NEWS',
+
+            NEWS_API_KEY: process.env.NEWS_API_KEY
+        });
     } catch (err) {
         console.error('Rendering error:', err);
         res.status(500).send('Error rendering template');
