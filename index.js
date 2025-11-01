@@ -1,5 +1,5 @@
 import express from "express";
-import ejs from "ejs";
+import ejs from "ejs";  
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -17,16 +17,13 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.get('/', (_, res) => {
-    res.send("/home to view the homepage");
-});
 
-app.get('/home', (_, res) => {
+
+app.get('/', (_, res) => {
     try {
         res.render('index', {
             title: 'homepage',
-            GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-            NEWS_API_KEY: process.env.NEWS_API_KEY
+            GEMINI_API_KEY: process.env.GEMINI_API_KEY
         });
     } catch (err) {
         console.error('Rendering error:', err);
