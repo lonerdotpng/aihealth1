@@ -2,17 +2,18 @@
 <html lang="en">
 
 <head>
-    
-    
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HealthVisor - AI Health & Mental Wellness</title>
-    
+
     <!-- Emoji Favicon (Health-related emojis) -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
-    
-    
-    
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+
+
+
 
     <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
     <style>
@@ -348,6 +349,25 @@
             flex-direction: column;
             gap: 20px;
         }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
 
         .message {
             display: flex;
@@ -761,7 +781,10 @@
             .nav-menu {
                 display: none;
             }
-            .fade-box {display: none;}
+
+            .fade-box {
+                display: none;
+            }
 
             .about {
                 display: none;
@@ -862,6 +885,8 @@
                 gap: 15px;
             }
 
+
+
             .message-content {
                 max-width: 85%;
                 padding: 12px 15px;
@@ -937,26 +962,26 @@
         }
 
         .line {
-        fill: none;
-        stroke: grey;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        stroke-width: 3;
-        transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
-            stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+            fill: none;
+            stroke: grey;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 3;
+            transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+                stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .line-top-bottom {
-        stroke-dasharray: 12 63;
+            stroke-dasharray: 12 63;
         }
 
         .hamburger input:checked+svg {
-        transform: rotate(-45deg);
+            transform: rotate(-45deg);
         }
 
         .hamburger input:checked+svg .line-top-bottom {
-        stroke-dasharray: 20 300;
-        stroke-dashoffset: -32.42;
+            stroke-dasharray: 20 300;
+            stroke-dashoffset: -32.42;
         }
 
         .dashboard-header {
@@ -1143,15 +1168,19 @@
 
 
     <!-- Dashboard Content -->
-  <div class="dashboard-content" id="dashboard-content">
-        <a href="/about" style="text-decoration: none;"><div class="dashboard-section">
-            <h2>More on student health</h2>
-        </div></a>
-        
-         <a href="/news" style="text-decoration: none;"><div class="dashboard-section">
-            <h2>News</h2>
-           
-        </div></a>
+    <div class="dashboard-content" id="dashboard-content">
+        <a href="/about" style="text-decoration: none;">
+            <div class="dashboard-section">
+                <h2>More on student health</h2>
+            </div>
+        </a>
+
+        <a href="/news" style="text-decoration: none;">
+            <div class="dashboard-section">
+                <h2>News</h2>
+
+            </div>
+        </a>
     </div>
 
 
@@ -1239,7 +1268,7 @@
         <a href="/about" class="ab-button">here📌</a>
     </div>
 
-     <div class="fade-box">
+    <div class="fade-box">
         <div id="news-container" class="content">
             <h3>Health News</h3>
             <div class="news-loading-state">
@@ -1247,108 +1276,109 @@
                 <p>Loading latest health news...</p>
             </div>
         </div>
-        <a href="/NEWS" class="ab-button" STYLE="bottom: 10px; width: auto; right: 125px; background-color: rgb(11, 11, 138), 11, 138; ">READ MORE</a>
+        <a href="/NEWS" class="ab-button"
+            STYLE="bottom: 10px; width: auto; right: 125px; background-color: rgb(11, 11, 138), 11, 138; ">READ MORE</a>
     </div>
-     
+
     </div>
-   
-  </div>
+
+    </div>
     <script>
-          const GEMINI_API_KEY = 'AIzaSyDhgjNzkdux2i7KANgO-i6VeEnk7OiICw4';
+        const GEMINI_API_KEY = 'AIzaSyDhgjNzkdux2i7KANgO-i6VeEnk7OiICw4';
 
 
-       const container = document.getElementById('news-container');
-        
-  async function fetchHealthNews(retryCount = 0, maxRetries = 3) {
-    try {
-        container.innerHTML = `
+        const container = document.getElementById('news-container');
+
+        async function fetchHealthNews(retryCount = 0, maxRetries = 3) {
+            try {
+                container.innerHTML = `
             <h3>Health News</h3>
             <div class="news-loading-state">
                 <div class="news-spinner"></div>
                 <p>Loading latest health news...</p>
             </div>
         `;
-        
-        
-        const RSS_URL = 'https://news.google.com/rss/topics/CAAqJQgKIh9DQkFTRVFvSUwyMHZNR3QwTlRFU0JXVnVMVWRDS0FBUAE?hl=en-IN&gl=IN&ceid=IN:en';
-        
-        // Use RSS2JSON API to convert RSS to JSON and handle CORS
-        const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
-        
-        const response = await fetch(API_URL);
-        
-        if (!response.ok) {
-            throw new Error(`Failed to fetch news: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.status !== 'ok' || !data.items || data.items.length === 0) {
-            throw new Error('No news articles found');
-        }
-        
-        container.innerHTML = '<h3>Health News</h3>';
-        
-        // Display the first 5 articles
-        const articles = data.items.slice(0, 5);
-        
-        articles.forEach(article => {
-            const item = document.createElement('div');
-            item.className = 'news-item';
-            
-            const publishedDate = new Date(article.pubDate);
-            const now = new Date();
-            const diffTime = Math.abs(now - publishedDate);
-            const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-            const diffDays = Math.floor(diffHours / 24);
-            
-            // Show relative time for recent articles
-            let timeString;
-            if (diffHours < 1) {
-                timeString = 'Just now';
-            } else if (diffHours < 24) {
-                timeString = `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-            } else if (diffDays < 7) {
-                timeString = `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
-            } else {
-                timeString = publishedDate.toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric' 
-                });
-            }
-            
-            const formattedDate = publishedDate.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            
-            //  (remove HTML tags)
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = article.description;
-            const cleanDescription = tempDiv.textContent || tempDiv.innerText || 'Click to read more...';
-            
-            item.innerHTML = `
+
+
+                const RSS_URL = 'https://news.google.com/rss/topics/CAAqJQgKIh9DQkFTRVFvSUwyMHZNR3QwTlRFU0JXVnVMVWRDS0FBUAE?hl=en-IN&gl=IN&ceid=IN:en';
+
+                // Use RSS2JSON API to convert RSS to JSON and handle CORS
+                const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+
+                const response = await fetch(API_URL);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch news: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status !== 'ok' || !data.items || data.items.length === 0) {
+                    throw new Error('No news articles found');
+                }
+
+                container.innerHTML = '<h3>Health News</h3>';
+
+                // Display the first 5 articles
+                const articles = data.items.slice(0, 5);
+
+                articles.forEach(article => {
+                    const item = document.createElement('div');
+                    item.className = 'news-item';
+
+                    const publishedDate = new Date(article.pubDate);
+                    const now = new Date();
+                    const diffTime = Math.abs(now - publishedDate);
+                    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+                    const diffDays = Math.floor(diffHours / 24);
+
+                    // Show relative time for recent articles
+                    let timeString;
+                    if (diffHours < 1) {
+                        timeString = 'Just now';
+                    } else if (diffHours < 24) {
+                        timeString = `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+                    } else if (diffDays < 7) {
+                        timeString = `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+                    } else {
+                        timeString = publishedDate.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                        });
+                    }
+
+                    const formattedDate = publishedDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    //  (remove HTML tags)
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = article.description;
+                    const cleanDescription = tempDiv.textContent || tempDiv.innerText || 'Click to read more...';
+
+                    item.innerHTML = `
                 <time>${formattedDate} • ${timeString}</time>
                 <p><strong>${article.title}</strong></p>
                 <p>${cleanDescription.substring(0, 150)}${cleanDescription.length > 150 ? '...' : ''}</p>
                 <a href="${article.link}" target="_blank" rel="noopener noreferrer">Read more →</a>
             `;
-            container.appendChild(item);
-        });
-        
-    } catch (error) {
-        console.error('Error fetching news:', error);
-        
-        // Retry logic with exponential backoff
-        if (retryCount < maxRetries) {
-            const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
-            console.log(`Retrying after ${delay}ms...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return fetchHealthNews(retryCount + 1, maxRetries);
-        }
-        
-        container.innerHTML = `
+                    container.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error('Error fetching news:', error);
+
+                // Retry logic with exponential backoff
+                if (retryCount < maxRetries) {
+                    const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+                    console.log(`Retrying after ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchHealthNews(retryCount + 1, maxRetries);
+                }
+
+                container.innerHTML = `
             <h3>Health News</h3>
             <div class="error">
                 <p>Unable to load news at this time.</p>
@@ -1356,29 +1386,29 @@
             </div>
             <button class="refresh-btn" onclick="fetchHealthNews()">Try Again</button>
         `;
-    }
-}
+            }
+        }
 
-function startNewsAutoRefresh() {
-    // Refresh every 30 minutes 
-    newsRefreshInterval = setInterval(() => {
-        console.log('Auto-refreshing health news...');
-        fetchHealthNews();
-    }, 30 * 60 * 1000); 
-}
+        function startNewsAutoRefresh() {
+            // Refresh every 30 minutes 
+            newsRefreshInterval = setInterval(() => {
+                console.log('Auto-refreshing health news...');
+                fetchHealthNews();
+            }, 30 * 60 * 1000);
+        }
 
 
 
-if (window.innerWidth > 768) {
-    fetchHealthNews();
-    startNewsAutoRefresh();
-}  
-        
-    
-    
-    
-    // api key gemini
-  
+        if (window.innerWidth > 768) {
+            fetchHealthNews();
+            startNewsAutoRefresh();
+        }
+
+
+
+
+        // api key gemini
+
 
         document.getElementById('hamburger-toggle').addEventListener('change', function () {
             const dashboardContent = document.getElementById('dashboard-content');
@@ -1388,8 +1418,8 @@ if (window.innerWidth > 768) {
                 dashboardContent.classList.remove('visible');
             }
         });
-        
-        
+
+
 
         function closeWarning() {
             document.getElementById('warningOverlay').style.display = 'none';
@@ -1464,7 +1494,7 @@ if (window.innerWidth > 768) {
             const disease = document.getElementById('disease').value.trim();
             const additionalInfo = document.getElementById('additionalInfo').value.trim();
 
-        
+
 
             error.style.display = 'none';
             results.style.display = 'none';
@@ -1652,13 +1682,13 @@ Keep it concise and practical.`;
 
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
-            
+
             const avatarImg = document.createElement('img');
             avatarImg.src = sender === 'bot' ? '/assets/r1.png' : '/assets/r4.png';
             avatarImg.alt = sender === 'bot' ? 'Bot Avatar' : 'User Avatar';
-            
+
             avatar.appendChild(avatarImg);
-            
+
             const content = document.createElement('div');
             content.className = 'message-content';
             content.textContent = text;
