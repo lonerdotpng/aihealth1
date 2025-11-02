@@ -63,14 +63,45 @@ app.post('/api/health-plan', async (req, res) => {
         const prompt = `Please provide a comprehensive health management plan for someone with ${disease} and make the output short and crisp.
 ${additionalInfo ? `Additional context: ${additionalInfo}` : ''}
 
-Structure your response with these sections:
-- **Overview** of the plan
-- **Diet Plan**
-- **Exercise Recommendations**
-- **Lifestyle Advice**
-- **Important Considerations**
+IMPORTANT: Use bullet points with asterisks for all items under each section. Add as many bullet points as necessary to thoroughly cover the topic.
 
-Keep it concise and practical.`;
+Structure your response EXACTLY like this (no intro text, start directly):
+
+Overview
+* First point about the overview
+* Second point about overview
+* Continue adding more points as needed for comprehensive coverage
+
+Diet Plan
+* First dietary recommendation
+* Second dietary recommendation
+* Third dietary recommendation
+* Continue adding more points as needed
+
+Exercise Recommendations
+* First exercise suggestion
+* Second exercise suggestion
+* Third exercise suggestion
+* Continue adding more points as needed
+
+Lifestyle Advice
+* First lifestyle recommendation
+* Second lifestyle recommendation
+* Third lifestyle recommendation
+* Continue adding more points as needed
+
+Important Considerations
+* First important point
+* Second important point
+* Third important point
+* Continue adding more points as needed
+
+Rules:
+- Use ONLY asterisk (*) for bullet points, not dashes or dots
+- Keep each bullet point concise (1-2 sentences max)
+- Add as many bullet points as necessary but keep the output short - no limit, be thorough
+- NO paragraphs, ONLY bullet lists under each section
+- NO intro text at the beginning`;
         
         const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -79,7 +110,10 @@ Keep it concise and practical.`;
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+                    generationConfig: { 
+                        temperature: 0.7, 
+                        maxOutputTokens: 2048 // Increased for more content
+                    }
                 })
             }
         );
@@ -95,6 +129,8 @@ Keep it concise and practical.`;
         res.status(500).json({ error: error.message });
     }
 });
+
+
 
 app.post('/api/chat', async (req, res) => {
     try {

@@ -537,6 +537,39 @@
     margin-bottom: 10px;
 }
 
+.copy-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 15px;
+    transition: all 0.3s;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.copy-btn:hover {
+    background: #764ba2;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.copy-btn.copied {
+    background: #28a745;
+}
+
+.copy-feedback {
+    display: inline-block;
+    margin-left: 10px;
+    color: #28a745;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+
 
 
         .about {
@@ -1487,33 +1520,7 @@ const error = document.getElementById('error');
 const submitBtn = document.getElementById('submitBtn');
 
 // Add form submit event listener
-form.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevents page reload
-    
-    const disease = document.getElementById('disease').value;
-    const additionalInfo = document.getElementById('additionalInfo').value;
-    
-    // Hide previous results and errors
-    results.style.display = 'none';
-    error.style.display = 'none';
-    loading.style.display = 'block';
-    submitBtn.disabled = true;
-    
-    try {
-        const response = await callGeminiAPI(null, disease, additionalInfo);
-        
-        // Display results
-        results.innerHTML = formatHealthPlan(response);
-        results.style.display = 'block';
-    } catch (err) {
-        error.textContent = `Error: ${err.message}`;
-        error.style.display = 'block';
-        console.error('Health plan generation error:', err);
-    } finally {
-        loading.style.display = 'none';
-        submitBtn.disabled = false;
-    }
-});
+
 
 function formatHealthPlan(text) {
     let html = '';
@@ -1521,8 +1528,9 @@ function formatHealthPlan(text) {
     let currentSection = '';
     let listItems = [];
     let inList = false;
+    let currentHeading = '';
 
-    lines.forEach((line, idx) => {
+    lines.forEach((line) => {
         let trimmed = line.trim();
 
         // Skip empty lines
@@ -1535,57 +1543,59 @@ function formatHealthPlan(text) {
             return;
         }
 
-        // SKIP SEPARATOR LINES (like -- or ---)
+        // SKIP SEPARATOR LINES
         if (trimmed === '--' || trimmed === '---' || trimmed === '----' || 
             trimmed.match(/^-{2,}$/) || trimmed.match(/^_{2,}$/)) {
-            // Close any open list
             if (inList && listItems.length > 0) {
                 currentSection += '<ul>' + listItems.map(item => `<li>${item}</li>`).join('') + '</ul>';
                 listItems = [];
                 inList = false;
             }
-            return; // Don't add separator to output
+            return;
         }
 
-        // Detect headings (lines ending with : or starting and ending with **)
-        const isHeading = trimmed.endsWith(':') || 
-                         (trimmed.startsWith('**') && trimmed.endsWith('**'));
+        // Detect headings (ends with nothing special, just plain text like "Overview")
+        const isHeading = line.length > 0 && !line.startsWith(' ') && trimmed.length > 0 && 
+                         !trimmed.startsWith('*') && !trimmed.startsWith('•') &&
+                         !trimmed.includes('recommend') && !trimmed.includes('point');
 
-        if (isHeading) {
-            // Close previous list if exists
+        // Better heading detection - single word or 2-3 words, no special chars
+        const isProbablyHeading = /^[A-Z][a-zA-Z\s]*$/.test(trimmed) && 
+                                 trimmed.split(' ').length <= 4 &&
+                                 trimmed.length < 50;
+
+        if (isProbablyHeading && !trimmed.endsWith('.') && trimmed !== '' && 
+            (trimmed === 'Overview' || trimmed === 'Diet Plan' || trimmed === 'Exercise Recommendations' || 
+             trimmed === 'Lifestyle Advice' || trimmed === 'Important Considerations' ||
+             /^[A-Z][a-zA-Z\s]{3,30}$/.test(trimmed))) {
+            
+            // CLOSE previous section and create NEW div
             if (inList && listItems.length > 0) {
                 currentSection += '<ul>' + listItems.map(item => `<li>${item}</li>`).join('') + '</ul>';
                 listItems = [];
                 inList = false;
             }
 
-            // Close previous section
             if (currentSection) {
                 html += `<div class="result-section">${currentSection}</div>`;
-                currentSection = '';
             }
 
-            // Format heading
-            let heading = trimmed
-                .replace(/\*\*/g, '') // Remove **
-                .replace(/:$/, '') // Remove trailing :
-                .trim();
-
-            currentSection = `<h2>${heading}</h2>`;
+            // START NEW SECTION with this heading
+            currentSection = `<h2>${trimmed}</h2>`;
+            currentHeading = trimmed;
         }
-        // Detect bullet points (must be * followed by space, not **)
+        // Detect bullet points
         else if (trimmed.startsWith('* ') || trimmed.startsWith('• ')) {
             inList = true;
             const itemText = trimmed
-                .replace(/^\* /, '') // Remove * bullet
-                .replace(/^• /, '') // Remove • bullet
+                .replace(/^\* /, '')
+                .replace(/^• /, '')
                 .trim();
             
-            // Handle inline bold formatting
             const processedItem = itemText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
             listItems.push(processedItem);
         }
-        // Regular text (intro paragraphs, etc)
+        // Regular text
         else {
             if (inList && listItems.length > 0) {
                 currentSection += '<ul>' + listItems.map(item => `<li>${item}</li>`).join('') + '</ul>';
@@ -1593,9 +1603,10 @@ function formatHealthPlan(text) {
                 inList = false;
             }
             
-            // Handle inline bold formatting in paragraphs
             const processedLine = trimmed.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-            currentSection += `<p>${processedLine}</p>`;
+            if (processedLine && currentSection) {
+                currentSection += `<p>${processedLine}</p>`;
+            }
         }
     });
 
@@ -1612,6 +1623,7 @@ function formatHealthPlan(text) {
 }
 
 
+
 async function callGeminiAPI(apiKey, disease, additionalInfo) {
     const response = await fetch('/api/health-plan', {
         method: 'POST',
@@ -1626,6 +1638,119 @@ async function callGeminiAPI(apiKey, disease, additionalInfo) {
     const data = await response.json();
     return data.candidates[0].content.parts[0].text;
 }
+
+// Store the raw response for copy functionality
+let lastHealthPlanResponse = '';
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    const disease = document.getElementById('disease').value;
+    const additionalInfo = document.getElementById('additionalInfo').value;
+    
+    results.style.display = 'none';
+    error.style.display = 'none';
+    loading.style.display = 'block';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await callGeminiAPI(null, disease, additionalInfo);
+        
+        // Store raw response
+        lastHealthPlanResponse = response;
+        
+        // Format and display
+        const formattedHtml = formatHealthPlan(response);
+        results.innerHTML = formattedHtml + `
+            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+               
+                <button class="submitBtn" onclick="copyHealthPlanFormatted()">Copy Plan</button>
+                <span class="copy-feedback" id="copy-feedback" style="display: none;"></span>
+            </div>
+        `;
+        results.style.display = 'block';
+    } catch (err) {
+        error.textContent = `Error: ${err.message}`;
+        error.style.display = 'block';
+        console.error('Health plan generation error:', err);
+    } finally {
+        loading.style.display = 'none';
+        submitBtn.disabled = false;
+    }
+});
+
+// Copy raw text to clipboard
+
+
+// Copy formatted text to clipboard
+function copyHealthPlanFormatted() {
+    if (!lastHealthPlanResponse) {
+        alert('No response to copy');
+        return;
+    }
+    
+    // Convert HTML to formatted text with bullets and structure
+    const formattedText = convertHtmlToFormattedText(lastHealthPlanResponse);
+    
+    navigator.clipboard.writeText(formattedText).then(() => {
+        showCopyFeedback('Formatted text copied to clipboard!');
+    }).catch(err => {
+        alert('Failed to copy: ' + err.message);
+    });
+}
+
+// Convert HTML back to readable formatted text
+function convertHtmlToFormattedText(rawText) {
+    let formatted = '';
+    const lines = rawText.split('\n');
+    
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        
+        if (!trimmed || trimmed === '--') return;
+        
+        // Check if it's a heading
+        if (/^[A-Z][a-zA-Z\s]{3,30}$/.test(trimmed) && trimmed.split(' ').length <= 4) {
+            formatted += '\n' + trimmed + '\n';
+        }
+        // Check if it's a bullet point
+        else if (trimmed.startsWith('* ')) {
+            formatted += trimmed + '\n';
+        }
+        // Regular text
+        else if (trimmed) {
+            formatted += '• ' + trimmed + '\n';
+        }
+    });
+    
+    return formatted;
+}
+
+// Show feedback message
+function showCopyFeedback(message) {
+    const feedback = document.getElementById('copy-feedback');
+    const buttons = document.querySelectorAll('.copy-btn');
+    
+    // Update buttons
+    buttons.forEach(btn => {
+        btn.classList.add('copied');
+        btn.style.opacity = '0.7';
+    });
+    
+    // Show feedback
+    feedback.textContent = message;
+    feedback.style.display = 'inline-block';
+    
+    // Reset after 3 seconds
+    setTimeout(() => {
+        buttons.forEach(btn => {
+            btn.classList.remove('copied');
+            btn.style.opacity = '1';
+        });
+        feedback.style.display = 'none';
+    }, 3000);
+}
+
 
 
         // ==================== MENTAL HEALTH CHAT LOGIC ====================
