@@ -1,11 +1,615 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Health News - HealthVisor</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+
+        /* Header Section */
+        .page-header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        }
+
+        .page-header p {
+            font-size: 1.2em;
+            color: #666;
+            font-family: 'Courgette', 'Comic Sans MS', cursive;
+        }
+
+        .update-info {
+            display: inline-block;
+            background: #f0f4ff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            width: auto;
+        }
+
+        .filter-section label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-select {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            background: white;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .refresh-btn {
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-left: auto;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 5px solid #667eea;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .news-date {
+            font-size: 0.85em;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .news-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .news-title {
+            font-size: 1.3em;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+
+        .news-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .news-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .news-source {
+            font-size: 0.85em;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .read-more {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s;
+        }
+
+        .read-more:hover {
+            color: #764ba2;
+        }
+
+        .read-more::after {
+            content: '→';
+            transition: transform 0.3s;
+        }
+
+        .read-more:hover::after {
+            transform: translateX(5px);
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* Error State */
+        .error-container {
+            display: none;
+            background: #ffe6e6;
+            border-left: 5px solid #d32f2f;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-title {
+            color: #d32f2f;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #c00;
+            line-height: 1.6;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .page-header h1 {
+                font-size: 2em;
+            }
+
+            .page-header p {
+                font-size: 1em;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .refresh-btn {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main-container {
+                margin-top: 80px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .page-header {
+                padding: 25px 20px;
+            }
+
+            .page-header h1 {
+                font-size: 1.6em;
+            }
+
+            .news-card {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-news content
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">HealthVisor</a>
+            <div class="nav-menu">
+                <a href="/" class="nav-item">💖Health Plans</a>
+                <a href="/about" class="nav-item">About</a>
+                <a href="/news" class="nav-item active">News</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Health News</h1>
+            <p>Stay updated with the latest health & medical breakthroughs</p>
+            <div class="update-info">
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <label for="regionFilter">Region:</label>
+            <select id="regionFilter" class="filter-select" onchange="changeRegion()">
+                <option value="IN">India</option>
+                <option value="US">United States</option>
+                <option value="GB">United Kingdom</option>
+                <option value="CA">Canada</option>
+                <option value="AU">Australia</option>
+            </select>
+
+            <label for="sortFilter">Sort by:</label>
+            <select id="sortFilter" class="filter-select" onchange="sortNews()">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+            </select>
+
+          
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-container" id="loadingContainer">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading latest health news from around the world...</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-container" id="errorContainer">
+            <h3 class="error-title">⚠️ Unable to Load News</h3>
+            <p class="error-message" id="errorMessage"></p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-state-icon">📭</div>
+            <p class="empty-state-text">No news articles found. Try changing the region filter.</p>
+        </div>
+
+        <!-- News Grid -->
+        <div class="news-grid" id="newsGrid"></div>
+    </div>
+
+    <script>
+        let newsData = [];
+        let currentRegion = 'IN';
+
+        // Fetch news on page load
+        fetchHealthNews();
+
+        // Auto-refresh every 30 minutes
+        setInterval(fetchHealthNews, 30 * 60 * 1000);
+
+        async function fetchHealthNews() {
+            showLoading();
+
+            try {
+                const RSS_URL = `https://news.google.com/rss/topics/CAAqJQgKIh9DQkFTRVFvSUwyMHZNR3QwTlRFU0JXVnVMVWRDS0FBUAE?hl=en-${currentRegion}&gl=${currentRegion}&ceid=${currentRegion}:en`;
+                const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+
+                const response = await fetch(API_URL);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch news: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status !== 'ok' || !data.items || data.items.length === 0) {
+                    showEmpty();
+                    return;
+                }
+
+                newsData = data.items;
+                displayNews(newsData);
+
+            } catch (error) {
+                showError(error.message);
+                console.error('Error fetching news:', error);
+            }
+        }
+
+        function displayNews(articles) {
+            const newsGrid = document.getElementById('newsGrid');
+            newsGrid.innerHTML = '';
+
+            hideAllStates();
+            newsGrid.style.display = 'grid';
+
+            articles.forEach((article, index) => {
+                const publishedDate = new Date(article.pubDate);
+                const timeAgo = getTimeAgo(publishedDate);
+                const formattedDate = publishedDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Clean description
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = article.description;
+                const cleanDescription = tempDiv.textContent || tempDiv.innerText || 'Click to read the full article.';
+
+                // Determine if article is "new" (within 24 hours)
+                const isNew = (Date.now() - publishedDate.getTime()) < 24 * 60 * 60 * 1000;
+
+                const card = document.createElement('div');
+                card.className = 'news-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                card.innerHTML = `
+                    <div class="news-meta">
+                        <span class="news-date">📅 ${formattedDate} • ${timeAgo}</span>
+                        ${isNew ? '<span class="news-badge">New</span>' : ''}
+                    </div>
+                    <h2 class="news-title">${article.title}</h2>
+                    <p class="news-description">${cleanDescription.substring(0, 200)}${cleanDescription.length > 200 ? '...' : ''}</p>
+                    <div class="news-footer">
+                        <span class="news-source"> ${article.author || 'Google News'}</span>
+                        <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="read-more">
+                            Read Full Story
+                        </a>
+                    </div>
+                `;
+
+                newsGrid.appendChild(card);
+            });
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffMinutes = Math.floor(diffTime / (1000 * 60));
+            const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffMinutes < 1) return 'Just now';
+            if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function changeRegion() {
+            const select = document.getElementById('regionFilter');
+            currentRegion = select.value;
+            fetchHealthNews();
+        }
+
+        function sortNews() {
+            const sortType = document.getElementById('sortFilter').value;
+
+            if (sortType === 'newest') {
+                newsData.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+            } else {
+                newsData.sort((a, b) => new Date(a.pubDate) - new Date(b.pubDate));
+            }
+
+            displayNews(newsData);
+        }
+
+        function showLoading() {
+            hideAllStates();
+            document.getElementById('loadingContainer').style.display = 'block';
+        }
+
+        function showError(message) {
+            hideAllStates();
+            document.getElementById('errorContainer').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function showEmpty() {
+            hideAllStates();
+            document.getElementById('emptyState').style.display = 'block';
+        }
+
+        function hideAllStates() {
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('newsGrid').style.display = 'none';
+        }
+    </script>
 </body>
+
 </html>
