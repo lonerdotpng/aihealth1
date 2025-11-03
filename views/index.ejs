@@ -21,7 +21,9 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
+            -webkit-tap-highlight-color: transparent;
+}
+        
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -169,14 +171,18 @@
             margin-bottom: 10px;
             text-transform: uppercase;
             font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            letter-spacing: 2px;
         }
 
         .header p {
             opacity: 0.9;
-            font-size: 1.1em;
-            font-family: 'Courgette', 'Comic Sans MS', cursive;
-            letter-spacing: 0.5px;
+            font-size: 1.3em;
+            font-family: monospace, 'Courier New', Courier, sans-serif;
+            letter-spacing: 1px;
+            font-weight: 500;
+           
             line-height: 1.4;
+         
         }
 
         .content {
@@ -221,7 +227,7 @@
         }
 
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /*submit button */
             color: white;
             border: none;
             padding: 15px 40px;
@@ -597,11 +603,11 @@
         .ab-button {
             position: absolute;
             bottom: 20px;
-            background: rgb(68, 68, 212);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             padding: 5px 10px;
-            border-radius: 50px;
+            border-radius: 10px;
             cursor: pointer;
             text-decoration: none;
             width: 40%;
@@ -887,11 +893,12 @@
             }
 
             .header h1 {
-                font-size: 1.8em;
+                font-size: 1.9em;
             }
 
             .header p {
-                font-size: 0.95em;
+                font-size: 1em;
+                font-family: monospace, 'Courier New', Courier, sans-serif;
             }
 
             .content {
@@ -1156,6 +1163,8 @@
             background: #f8f9ff;
             border-radius: 10px;
             border-left: 4px solid #667eea;
+            left: -10px;
+            position: relative;
         }
 
         .news-item h3 {
@@ -1249,14 +1258,14 @@
         <div class="page active" id="healthPage">
             <div class="container">
                 <div class="header">
-                    <h1>healthvisor</h1>
+                    <h1>health plans</h1>
                     <p>Get personalized diet plans, exercises, and health advice</p>
                 </div>
 
                 <div class="content">
                     <form id="healthForm">
                         <div class="input-section">
-                            <label for="disease">Health Condition or Disease *</label>
+                            <label for="disease">Health Condition or Disease</label>
                             <input type="text" id="disease" placeholder="e.g., Diabetes, Obesity" required>
                         </div>
 
@@ -1337,7 +1346,7 @@
             </div>
         </div>
         <a href="/NEWS" class="ab-button"
-            STYLE="bottom: 10px; width: auto; right: 125px; background-color: rgb(11, 11, 138), 11, 138; ">READ MORE</a>
+            STYLE="bottom: 10px; width: auto; right: 120px; background-color: rgb(11, 11, 138), 11, 138; ">READ MORE</a>
     </div>
 
     </div>
@@ -1664,7 +1673,7 @@ form.addEventListener('submit', async (event) => {
         results.innerHTML = formattedHtml + `
             <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                
-                <button class="submitBtn" onclick="copyHealthPlanFormatted()">Copy Plan</button>
+                <button class=submitBtn"" onclick="copyHealthPlanFormatted()">Copy Plan</button>
                 <span class="copy-feedback" id="copy-feedback" style="display: none;"></span>
             </div>
         `;

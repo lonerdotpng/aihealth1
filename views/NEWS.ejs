@@ -112,9 +112,9 @@
         }
 
         .page-header p {
-            font-size: 1.2em;
+            font-size: 1.4em;
             color: #666;
-            font-family: 'Courgette', 'Comic Sans MS', cursive;
+            font-family: 'Courier New', Courier, monospace;
         }
 
         .update-info {
@@ -366,7 +366,7 @@
             }
 
             .page-header p {
-                font-size: 1em;
+                font-size: 1.2em;
             }
 
             .news-grid {
@@ -422,8 +422,8 @@
         <!-- Page Header -->
         <div class="page-header">
             <h1>Health News</h1>
-            <p>Stay updated with the latest health & medical breakthroughs</p>
-            <div class="update-info">
+             <div class="update-info">
+                <p>Stay updated with the latest health & medical breakthroughs</p>
             </div>
         </div>
 
@@ -538,7 +538,7 @@
 
                 card.innerHTML = `
                     <div class="news-meta">
-                        <span class="news-date">📅 ${formattedDate} • ${timeAgo}</span>
+                        <span class="news-date"> ${formattedDate} • ${timeAgo}</span>
                         ${isNew ? '<span class="news-badge">New</span>' : ''}
                     </div>
                     <h2 class="news-title">${article.title}</h2>
