@@ -46,7 +46,7 @@ app.get('/NEWS', (_, res) => {
     try {
         res.render('NEWS', {
             title: 'NEWS'
-            // REMOVED: NEWS_API_KEY
+
         });
     } catch (err) {
         console.error('Rendering error:', err);
