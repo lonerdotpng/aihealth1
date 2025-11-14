@@ -1,5 +1,5 @@
 import express from "express";
-import ejs from "ejs";  
+import ejs from "ejs";
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -12,20 +12,29 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ADD THIS: Middleware to parse JSON
+//  parse JSON
 app.use(express.json());
+
+app.use((req, res, next) => {
+    const ip =
+        req.headers["x-forwarded-for"]?.split(",")[0] ||
+        req.socket.remoteAddress;
+
+    console.log(`Visitor IP: ${ip} | Path: ${req.method} ${req.originalUrl}`);
+    next();
+});
 
 // Serve static files
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Page routes - REMOVE API key from here
+
 app.get('/', (_, res) => {
     try {
         res.render('index', {
             title: 'homepage'
-            // REMOVED: GEMINI_API_KEY
+
         });
     } catch (err) {
         console.error('Rendering error:', err);
@@ -54,12 +63,12 @@ app.get('/NEWS', (_, res) => {
     }
 });
 
-// ADD THESE: API proxy routes to keep keys secure
+
 app.post('/api/health-plan', async (req, res) => {
     try {
         const { disease, additionalInfo } = req.body;
         const apiKey = process.env.GEMINI_API_KEY;
-        
+
         const prompt = `Please provide a comprehensive health management plan for someone with ${disease} and make the output short and crisp.
 ${additionalInfo ? `Additional context: ${additionalInfo}` : ''}
 
@@ -102,26 +111,30 @@ Rules:
 - Add as many bullet points as necessary but keep the output short - no limit, be thorough
 - NO paragraphs, ONLY bullet lists under each section
 - NO intro text at the beginning`;
-        
+
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { 
-                        temperature: 0.7, 
-                        maxOutputTokens: 2048 // Increased for more content
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 2048
                     }
                 })
             }
         );
-        
+
         if (!response.ok) {
-            throw new Error('Gemini API request failed');
+            const errorData = await response.json();
+            console.error('Gemini API Error Status:', response.status);
+            console.error('Gemini API Error Details:', JSON.stringify(errorData, null, 2));
+            throw new Error(`Gemini API failed: ${response.status} - ${JSON.stringify(errorData)}`);
         }
-        
+
+
         const data = await response.json();
         res.json(data);
     } catch (error) {
@@ -136,13 +149,13 @@ app.post('/api/chat', async (req, res) => {
     try {
         const { message } = req.body;
         const apiKey = process.env.GEMINI_API_KEY;
-        
+
         const fullPrompt = `You are a compassionate and supportive mental health assistant. Your role is to listen empathetically, provide emotional support, suggest healthy coping strategies, and encourage professional help when needed. Never provide medical diagnoses. Be warm, understanding, and patient. Keep responses concise (2-4 sentences) and supportive and try to give solution to the problems given.
 
 User: ${message}
 
 Response:`;
-        
+
         const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
             {
@@ -154,11 +167,11 @@ Response:`;
                 })
             }
         );
-        
+
         if (!response.ok) {
             throw new Error('Gemini API request failed');
         }
-        
+
         const data = await response.json();
         res.json(data);
     } catch (error) {
