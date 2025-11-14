@@ -198,9 +198,23 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: rgb(0, 0, 0)000;
             font-size: 1.1em;
+            
         }
+
+
+        label1 {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: rgb(0, 0, 0)000;
+            font-size: 1.1em;
+            left: -60px;
+            position: relative;
+        }
+        
+        
 
         input,
         textarea,
@@ -838,8 +852,64 @@
             }
         }
 
+        .speechBtn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.5em;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0;  /* Remove the 28px margin */
+    margin-bottom: 0;
+}
+
+
+
+
+        .speechBtn:hover {
+
+            transform: translateY(-2px);
+
+        }
+
+        .speechBtn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+         /* label for mobile not shows on pc */
+            labelm1{
+                display: none;
+            }
+        
+
         /* Mobile Responsive Styles */
         @media screen and (max-width: 768px) {
+            .speechBtn{
+                display: none;
+            }
+
+            label1 {
+                display: none;
+            }
+
+              /* Mobile label */
+        labelm1 {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: rgb(0, 0, 0)000;
+            font-size: 1.1em;
+            
+        }
 
             /* Hide warning overlay on mobile */
             .overlay {
@@ -1008,54 +1078,22 @@
             }
         }
 
-        .healthplancon {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
+       .healthplancon {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+}
 
-        .healthplancon .input-section {
-            flex: 1;
-            margin-bottom: 0;
-        }
+.healthplancon .input-section {
+    flex: 1;
+    margin-bottom: 0;
+}
 
-        .healthplancon + .input-section {
+.healthplancon + .input-section {
     margin-top: 30px; 
 }
 
-        .speechBtn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            width: 50px;
-            height: 50px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1.5em;
-            color: white;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 3px 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 28px;
-            
-        }
 
-
-
-
-        .speechBtn:hover {
-
-            transform: translateY(-2px);
-
-        }
-
-        .speechBtn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
 
         @media screen and (min-width: 769px) {
             .hamburger {
@@ -1321,7 +1359,10 @@
         <img src="assets/r5.png">
     </div>
     <div class="input-section">
-        <label for="disease">Health Condition or Disease</label>
+        <labelm1 for="disease">Health Condition or Disease</labelm1>
+        <label1 for="disease">Health Condition or Disease</label1>
+           
+        
         <input type="text" id="disease" placeholder="e.g., Diabetes, Obesity" required>
     </div>
 </div>
@@ -1931,50 +1972,7 @@
             }
         }
 
-        const speechBtn = document.getElementById('speechBtn');
-const diseaseInput = document.getElementById('disease');
-
-// Check browser support for speech recognition
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-
-    speechBtn.addEventListener('click', () => {
-        recognition.start();
-        // Add visual feedback without changing the icon
-        speechBtn.style.opacity = '0.6';
-        speechBtn.style.transform = 'scale(0.95)';
-    });
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        diseaseInput.value = transcript;
-        // Reset visual state
-        speechBtn.style.opacity = '1';
-        speechBtn.style.transform = 'scale(1)';
-    };
-
-    recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        // Reset visual state
-        speechBtn.style.opacity = '1';
-        speechBtn.style.transform = 'scale(1)';
-    };
-
-    recognition.onend = () => {
-        // Reset visual state
-        speechBtn.style.opacity = '1';
-        speechBtn.style.transform = 'scale(1)';
-    };
-} else {
-    speechBtn.style.opacity = '0.5';
-    speechBtn.style.cursor = 'not-allowed';
-}
-
+        
     </script>
 </body>
 
