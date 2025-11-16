@@ -194,7 +194,7 @@ Response:`;
 });
 
 
-app.post("/api/log-visitor", (req, res) => {
+app.post("/api/ping", (req, res) => {
     const { visitorId } = req.body;
 
     const ip =
