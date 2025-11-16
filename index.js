@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { MongoClient } from "mongodb";
 
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,55 +14,58 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ------------------ MONGODB SETUP ------------------
 
+// ------------------ MONGODB SETUP ------------------
 const client = new MongoClient(process.env.MONGODB_URI);
 
-let logsCollection;
+let cachedDb = null;
 
-async function connectDB() {
+async function getDB() {
+    if (cachedDb) return cachedDb;
+
     try {
         await client.connect();
-        console.log("MongoDB connected");
+        console.log("MongoDB connected on Vercel");
 
-        logsCollection = client.db("healthvisor").collection("visitors");
+        cachedDb = client.db("healthvisor").collection("visitors");
+        return cachedDb;
     } catch (err) {
         console.error("MongoDB connection error:", err);
+        throw err;
     }
 }
 
-await connectDB();
+
+
+
+
 
 
 
 // ------------------ IP LOGGING MIDDLEWARE ------------------
-
 app.use(async (req, res, next) => {
     const ip =
         req.headers["x-forwarded-for"]?.split(",")[0] ||
         req.socket.remoteAddress;
 
-    // Skip anything that is from /api (including /api/ping)
-    if (req.originalUrl.startsWith("/api")) {
-        return next();
-    }
+    // hide ping
+    if (req.originalUrl === "/api/ping") return next();
 
-    // Skip static files and browser auto-requests
+    // hide all API routes
+    if (req.originalUrl.startsWith("/api")) return next();
+
+    // hide static assets
     const skipPatterns = [
         /^\/assets/,
         /^\/favicon\.ico$/,
         /^\/\.well-known/,
-        /\.png$/, /\.jpg$/, /\.jpeg$/,
-        /\.svg$/, /\.gif$/,
-        /\.css$/, /\.js$/
+        /\.(png|jpg|jpeg|svg|gif|css|js|webp|json|txt)$/i
     ];
-
-    // If path matches any skip pattern → skip logging
-    if (skipPatterns.some((pattern) => pattern.test(req.originalUrl))) {
-        return next();
-    }
+    if (skipPatterns.some(p => p.test(req.originalUrl))) return next();
 
     try {
+        const logsCollection = await getDB();
+
         await logsCollection.insertOne({
             ip,
             path: `${req.method} ${req.originalUrl}`,
