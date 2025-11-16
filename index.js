@@ -201,7 +201,15 @@ app.post("/api/log-visitor", (req, res) => {
         req.headers["x-forwarded-for"]?.split(",")[0] ||
         req.socket.remoteAddress;
 
-    console.log(`Visitor: ${visitorId} | IP: ${ip} | UA: ${req.headers["user-agent"]}`);
+   console.log(`
+Visitor IP: ${ip}
+Method: ${req.method}
+Path: ${req.originalUrl}
+User-Agent: ${req.headers["user-agent"]}
+Time: ${new Date().toLocaleString()}
+---------------------------
+`);
+
 
     res.json({ logged: true });
 });
