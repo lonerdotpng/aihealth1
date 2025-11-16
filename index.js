@@ -63,6 +63,19 @@ app.get('/NEWS', (_, res) => {
     }
 });
 
+app.get('/Profile', (_, res) => {
+    try {
+        res.render('profile', {
+            title: 'profile'
+
+        });
+    } catch (err) {
+        console.error('Rendering error:', err);
+        res.status(500).send('Error rendering template');
+    }
+});
+
+
 
 app.post('/api/health-plan', async (req, res) => {
     try {
@@ -178,6 +191,19 @@ Response:`;
         console.error('Chat API error:', error);
         res.status(500).json({ error: error.message });
     }
+});
+
+
+app.post("/api/log-visitor", (req, res) => {
+    const { visitorId } = req.body;
+
+    const ip =
+        req.headers["x-forwarded-for"]?.split(",")[0] ||
+        req.socket.remoteAddress;
+
+    console.log(`Visitor: ${visitorId} | IP: ${ip} | UA: ${req.headers["user-agent"]}`);
+
+    res.json({ logged: true });
 });
 
 app.listen(port, () => {

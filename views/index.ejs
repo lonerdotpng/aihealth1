@@ -1970,6 +1970,20 @@
             }
         }
 
+          // Generate visitor ID if not present
+    if (!localStorage.getItem("visitor_id")) {
+        localStorage.setItem("visitor_id", crypto.randomUUID());
+    }
+
+    const visitorId = localStorage.getItem("visitor_id");
+
+    // Send visitor ID to your server
+    fetch("/api/log-visitor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ visitorId })
+    });
+
         
     </script>
 </body>

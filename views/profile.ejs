@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>profile - HealthVisor</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 70px;
+            padding: 5px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Section Styles */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 0px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+            width: 30%;
+            height: 450px;
+            top: -20px;
+            position: relative;
+            left: 10px;
+            overflow: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            align-items: center;
+            background-color: #667eea;
+            text-align: center;
+            height: 30%;
+            top: 0px;
+            position: relative;
+            width: 100%;
+            left: 0px;
+        }
+
+        .section-icon {
+            font-size: 2.5em;
+            background-clip: text;
+        }
+
+        .section-header h2 {
+            font-size: 2em;
+            color: #333;
+            font-weight: 700;
+            top: 30px;
+            position: relative;
+        }
+
+        .pfp img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            background: #00000000;
+            border: #333 5px solid;
+            position: relative;
+            top: -50px;
+            left: 30%;
+        }
+
+        .linecon {
+            width: 100%;
+            height: 100%;
+            background-color: #143d9600;
+            position: relative;
+            top: -80px;
+        }
+
+        .sectionline {
+            width: 5px;
+            background-color: #0051ff;
+            position: relative;
+            bottom: 30px;
+            height: 50%;
+            left: 20px;
+        }
+
+        .sectionline p {
+            color: #0051ff;
+            position: relative;
+            left: 10px;
+            top: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        /* Edit Button Styles */
+        .edit-btn {
+            position: absolute;
+            top: 145px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Input Field Styles */
+       .field-value {
+    color: #333;
+    font-weight: 500;
+    margin-left: 0px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: inline-block;
+}
+
+.field-input {
+    width: 150px;
+    padding: 5px 10px;
+    border: 2px solid #667eea;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-left: 10px;
+    outline: none;
+}
+
+        .field-input:focus {
+            border-color: #764ba2;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-container {
+                padding: 0 15px;
+            }
+
+            .logo {
+                font-size: 1.4em;
+            }
+
+            .navbar {
+                padding: 15px 0;
+            }
+
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .section {
+                padding: 25px 20px;
+            }
+
+            .section-header h2 {
+                font-size: 1.5em;
+            }
+
+            .section-icon {
+                font-size: 2em;
+            }
+
+            .edit-btn {
+                top: 120px;
+                right: 10px;
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">HealthVisor</a>
+            <div class="nav-menu">
+                <a href="/" class="nav-item">💖Health Plans</a>
+                <a href="/profile" class="nav-item active">Profile</a>
+                <a href="/about" class="nav-item">News</a>
+                <a href="/news" class="nav-item">News</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>PROFILE</h1>
+    </div>
+
+    <!-- Introduction Section -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon"></span>
+            <h2 id="personName">Person</h2>
+        </div>
+        <button class="edit-btn" id="editBtn" onclick="toggleEdit()">✏️ Edit</button>
+        <div class="pfp"> <img src="assets/r4.png" draggable="false"></img></div>
+        <div class="linecon">
+            <div class="sectionline">
+                <p>Name: 
+                    <span id="nameDisplay" class="field-value">PARTH</span>
+                    <input type="text" id="nameInput" class="field-input hidden" value="PARTH">
+                </p>
+                
+                <p>Age: 
+                    <span id="ageDisplay" class="field-value">15</span>
+                    <input type="number" id="ageInput" class="field-input hidden" value="15">
+                </p>
+                
+                <p>Field2: 
+                    <span id="field2Display" class="field-value">Developer</span>
+                    <input type="text" id="field2Input" class="field-input hidden" value="Developer">
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isEditing = false;
+
+        function toggleEdit() {
+            const editBtn = document.getElementById('editBtn');
+            const nameDisplay = document.getElementById('nameDisplay');
+            const ageDisplay = document.getElementById('ageDisplay');
+            const field2Display = document.getElementById('field2Display');
+            const nameInput = document.getElementById('nameInput');
+            const ageInput = document.getElementById('ageInput');
+            const field2Input = document.getElementById('field2Input');
+            const personName = document.getElementById('personName');
+
+            if (!isEditing) {
+                // Switch to edit mode
+                nameDisplay.classList.add('hidden');
+                ageDisplay.classList.add('hidden');
+                field2Display.classList.add('hidden');
+                
+                nameInput.classList.remove('hidden');
+                ageInput.classList.remove('hidden');
+                field2Input.classList.remove('hidden');
+                
+                editBtn.textContent = '💾 Save';
+                isEditing = true;
+            } else {
+                // Save and switch to view mode
+                nameDisplay.textContent = nameInput.value;
+                ageDisplay.textContent = ageInput.value;
+                field2Display.textContent = field2Input.value;
+                personName.textContent = nameInput.value;
+                
+                nameDisplay.classList.remove('hidden');
+                ageDisplay.classList.remove('hidden');
+                field2Display.classList.remove('hidden');
+                
+                nameInput.classList.add('hidden');
+                ageInput.classList.add('hidden');
+                field2Input.classList.add('hidden');
+                
+                editBtn.textContent = '✏️ Edit';
+                isEditing = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
