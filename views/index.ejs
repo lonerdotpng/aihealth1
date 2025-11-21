@@ -1986,6 +1986,51 @@
         body: JSON.stringify({ visitorId })
     });
 
+
+    const speechBtn = document.getElementById('speechBtn');
+const diseaseInput = document.getElementById('disease');
+
+// Check browser support for speech recognition
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    speechBtn.addEventListener('click', () => {
+        recognition.start();
+        // Add visual feedback without changing the icon
+        speechBtn.style.opacity = '0.6';
+        speechBtn.style.transform = 'scale(0.95)';
+    });
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        diseaseInput.value = transcript;
+        // Reset visual state
+        speechBtn.style.opacity = '1';
+        speechBtn.style.transform = 'scale(1)';
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        // Reset visual state
+        speechBtn.style.opacity = '1';
+        speechBtn.style.transform = 'scale(1)';
+    };
+
+    recognition.onend = () => {
+        // Reset visual state
+        speechBtn.style.opacity = '1';
+        speechBtn.style.transform = 'scale(1)';
+    };
+} else {
+    speechBtn.style.opacity = '0.5';
+    speechBtn.style.cursor = 'not-allowed';
+}
+
         
     </script>
 </body>
