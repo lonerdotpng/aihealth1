@@ -15,25 +15,41 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 
+
 // ------------------ MONGODB SETUP ------------------
 const client = new MongoClient(process.env.MONGODB_URI);
 
-let cachedDb = null;
+let visitorsCollection = null;
+let chatCollection = null;
 
-async function getDB() {
-    if (cachedDb) return cachedDb;
+async function connectDB() {
+    if (visitorsCollection && chatCollection) return;
 
     try {
         await client.connect();
         console.log("MongoDB connected on Vercel");
 
-        cachedDb = client.db("healthvisor").collection("visitors");
-        return cachedDb;
+        const db = client.db("healthvisor");
+
+        visitorsCollection = db.collection("visitors");
+        chatCollection = db.collection("chat_history");
+
     } catch (err) {
         console.error("MongoDB connection error:", err);
         throw err;
     }
 }
+
+async function getVisitorsDB() {
+    await connectDB();
+    return visitorsCollection;
+}
+
+async function getChatDB() {
+    await connectDB();
+    return chatCollection;
+}
+
 
 
 
@@ -118,7 +134,48 @@ app.post("/api/health-plan", async (req, res) => {
         const { disease, additionalInfo } = req.body;
         const apiKey = process.env.GEMINI_API_KEY;
 
-        const prompt = `Your original prompt here…`;
+        const prompt = `Please provide a comprehensive health management plan for someone with ${disease} and make the output short and crisp.
+${additionalInfo ? `Additional context: ${additionalInfo}` : ''}
+
+IMPORTANT: Use bullet points with asterisks for all items under each section. Add as many bullet points as necessary to thoroughly cover the topic.
+
+Structure your response EXACTLY like this (no intro text, start directly):
+
+Overview
+* First point about the overview
+* Second point about overview
+* Continue adding more points as needed for comprehensive coverage
+
+Diet Plan
+* First dietary recommendation
+* Second dietary recommendation
+* Third dietary recommendation
+* Continue adding more points as needed
+
+Exercise Recommendations
+* First exercise suggestion
+* Second exercise suggestion
+* Third exercise suggestion
+* Continue adding more points as needed
+
+Lifestyle Advice
+* First lifestyle recommendation
+* Second lifestyle recommendation
+* Third lifestyle recommendation
+* Continue adding more points as needed
+
+Important Considerations
+* First important point
+* Second important point
+* Third important point
+* Continue adding more points as needed
+
+Rules:
+- Use ONLY asterisk (*) for bullet points, not dashes or dots
+- Keep each bullet point concise (1-2 sentences max)
+- Add as many bullet points as necessary but keep the output short - no limit, be thorough
+- NO paragraphs, ONLY bullet lists under each section
+- NO intro text at the beginning`;
 
         const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -152,7 +209,11 @@ app.post("/api/chat", async (req, res) => {
         const { message } = req.body;
         const apiKey = process.env.GEMINI_API_KEY;
 
-        const fullPrompt = `Your chat prompt`;
+        const fullPrompt = `You are a compassionate and supportive mental health assistant. Your role is to listen empathetically, provide emotional support, suggest healthy coping strategies, and encourage professional help when needed. Never provide medical diagnoses. Be warm, understanding, and patient. Keep responses concise (2-4 sentences) and supportive and try to give solution to the problems given.
+
+User: ${message}
+
+Response:`;
 
         const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -183,6 +244,8 @@ app.post("/api/chat", async (req, res) => {
 app.post("/api/ping", (req, res) => {
     res.json({ ok: true });
 });
+
+
 
 
 // ------------------ START SERVER ------------------

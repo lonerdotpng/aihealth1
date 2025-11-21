@@ -118,6 +118,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -211,26 +212,26 @@
         }
 
         /* Input Field Styles */
-       .field-value {
-    color: #333;
-    font-weight: 500;
-    margin-left: 0px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-    display: inline-block;
-}
+        .field-value {
+            color: #333;
+            font-weight: 500;
+            margin-left: 0px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            display: inline-block;
+        }
 
-.field-input {
-    width: 150px;
-    padding: 5px 10px;
-    border: 2px solid #667eea;
-    border-radius: 5px;
-    font-size: 1rem;
-    margin-left: 10px;
-    outline: none;
-}
+        .field-input {
+            width: 150px;
+            padding: 5px 10px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-left: 10px;
+            outline: none;
+        }
 
         .field-input:focus {
             border-color: #764ba2;
@@ -239,6 +240,21 @@
         .hidden {
             display: none;
         }
+
+
+        .healthplanbox {
+            width: 60%;
+            height: 50%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            top: 25%;
+            right: 30px;
+            position: absolute;
+        }
+
 
         /* Mobile Responsive */
         @media screen and (max-width: 768px) {
@@ -312,23 +328,25 @@
         <div class="pfp"> <img src="assets/r4.png" draggable="false"></img></div>
         <div class="linecon">
             <div class="sectionline">
-                <p>Name: 
+                <p>Name:
                     <span id="nameDisplay" class="field-value">PARTH</span>
                     <input type="text" id="nameInput" class="field-input hidden" value="PARTH">
                 </p>
-                
-                <p>Age: 
+
+                <p>Age:
                     <span id="ageDisplay" class="field-value">15</span>
                     <input type="number" id="ageInput" class="field-input hidden" value="15">
                 </p>
-                
-                <p>Field2: 
+
+                <p>Field2:
                     <span id="field2Display" class="field-value">Developer</span>
                     <input type="text" id="field2Input" class="field-input hidden" value="Developer">
                 </p>
             </div>
         </div>
     </div>
+
+    <div class="healthplanbox" id="mongoData">uyqwe</div>
 
     <script>
         let isEditing = false;
@@ -348,11 +366,11 @@
                 nameDisplay.classList.add('hidden');
                 ageDisplay.classList.add('hidden');
                 field2Display.classList.add('hidden');
-                
+
                 nameInput.classList.remove('hidden');
                 ageInput.classList.remove('hidden');
                 field2Input.classList.remove('hidden');
-                
+
                 editBtn.textContent = '💾 Save';
                 isEditing = true;
             } else {
@@ -361,19 +379,24 @@
                 ageDisplay.textContent = ageInput.value;
                 field2Display.textContent = field2Input.value;
                 personName.textContent = nameInput.value;
-                
+
                 nameDisplay.classList.remove('hidden');
                 ageDisplay.classList.remove('hidden');
                 field2Display.classList.remove('hidden');
-                
+
                 nameInput.classList.add('hidden');
                 ageInput.classList.add('hidden');
                 field2Input.classList.add('hidden');
-                
+
                 editBtn.textContent = '✏️ Edit';
                 isEditing = false;
             }
         }
+
+
+    
+
+
     </script>
 </body>
 
