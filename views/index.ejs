@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HealthVisor - AI Health & Mental Wellness</title>
 
-    <!-- Emoji Favicon (Health-related emojis) -->
+    
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
 
@@ -89,7 +89,7 @@
             color: white;
         }
 
-        /* Mobile Navigation */
+        
         .mobile-nav {
             display: none;
             position: fixed;
@@ -867,7 +867,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    margin-top: 0;  /* Remove the 28px margin */
+    margin-top: 0;  
     margin-bottom: 0;
 }
 
@@ -885,7 +885,7 @@
             height: 100%;
             object-fit: cover;
         }
-         /* label for mobile not shows on pc */
+
             labelm1{
                 display: none;
             }
@@ -916,7 +916,6 @@
                 display: none !important;
             }
 
-            /* Hide desktop nav menu, show mobile nav */
             .nav-menu {
                 display: none;
             }
@@ -933,12 +932,11 @@
                 display: block;
             }
 
-            /* Adjust page container for mobile nav */
             .pages-container {
                 margin-top: 60px;
                 margin-bottom: 0;
                 padding-bottom: 80px;
-                /* Space for bottom nav */
+            
             }
 
             .page {
@@ -1212,7 +1210,7 @@
             }
         }
 
-        /* Add these styles inside your existing <style> tag */
+        
         .dashboard-section {
             background: white;
             padding: 20px;
@@ -1394,7 +1392,7 @@
             </div>
         </div>
     </div>
-    <!-- Mental Health Chat Page -->
+    <!-- Mental Health Chat Page structure -->
     <div class="page" id="chatPage">
         <div class="container">
             <div class="header">
@@ -1469,7 +1467,7 @@
 
                 const RSS_URL = 'https://news.google.com/rss/topics/CAAqJQgKIh9DQkFTRVFvSUwyMHZNR3QwTlRFU0JXVnVMVWRDS0FBUAE?hl=en-IN&gl=IN&ceid=IN:en';
 
-                // Use RSS2JSON API to convert RSS to JSON and handle CORS
+                //RSS2JSON API fuction 
                 const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
 
                 const response = await fetch(API_URL);
@@ -1486,7 +1484,6 @@
 
                 container.innerHTML = '<h3>Health News</h3>';
 
-                // Display the first 5 articles
                 const articles = data.items.slice(0, 5);
 
                 articles.forEach(article => {
@@ -1786,10 +1783,10 @@
             }
         });
 
-        // Copy raw text to clipboard
+        
 
 
-        // Copy formatted text to clipboard
+        // Copy text to clipboard
         function copyHealthPlanFormatted() {
             if (!lastHealthPlanResponse) {
                 alert('No response to copy');
@@ -1848,14 +1845,14 @@
             feedback.textContent = message;
             feedback.style.display = 'inline-block';
 
-            // Reset after 3 seconds
+        
             setTimeout(() => {
                 buttons.forEach(btn => {
                     btn.classList.remove('copied');
                     btn.style.opacity = '1';
                 });
                 feedback.style.display = 'none';
-            }, 3000);
+            }, 2000);
         }
 
 
@@ -1972,14 +1969,14 @@
             }
         }
 
-          // Generate visitor ID if not present
+         
     if (!localStorage.getItem("visitor_id")) {
         localStorage.setItem("visitor_id", crypto.randomUUID());
     }
 
     const visitorId = localStorage.getItem("visitor_id");
 
-    // Send visitor ID to your server
+    
     fetch("/api/ping", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1990,7 +1987,7 @@
     const speechBtn = document.getElementById('speechBtn');
 const diseaseInput = document.getElementById('disease');
 
-// Check browser support for speech recognition
+
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (SpeechRecognition) {
@@ -2001,7 +1998,7 @@ if (SpeechRecognition) {
 
     speechBtn.addEventListener('click', () => {
         recognition.start();
-        // Add visual feedback without changing the icon
+      
         speechBtn.style.opacity = '0.6';
         speechBtn.style.transform = 'scale(0.95)';
     });
@@ -2009,7 +2006,7 @@ if (SpeechRecognition) {
     recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         diseaseInput.value = transcript;
-        // Reset visual state
+       
         speechBtn.style.opacity = '1';
         speechBtn.style.transform = 'scale(1)';
     };

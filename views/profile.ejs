@@ -346,9 +346,46 @@
         </div>
     </div>
 
-    <div class="healthplanbox" id="mongoData">uyqwe</div>
+    <div class="healthplanbox" id="savedResponses">savedResponse</div>
+   
 
-    <script>
+
+
+<script>
+function extractText(botResponse) {
+    try {
+        return botResponse.candidates?.[0]?.content?.parts?.[0]?.text 
+            || "(No text found)";
+    } catch {
+        return "(Invalid response)";
+    }
+}
+
+async function loadHistory() {
+    const box = document.getElementById("savedResponses");
+
+    try {
+        const res = await fetch("/api/chat-history");
+        const history = await res.json();
+
+        box.innerHTML = history.map(h => `
+            <div style="padding:12px; border-bottom:1px solid #ccc;">
+                <div><b>You:</b> ${h.userMessage}</div>
+                <div><b>AI:</b><br>
+                    <div class="ai-text" style="white-space:pre-wrap;">${extractText(h.botResponse)}</div>
+                </div>
+                <small>${new Date(h.timestamp).toLocaleString()}</small>
+            </div>
+        `).join("");
+
+    } catch (e) {
+        box.innerHTML = "Could not load saved responses.";
+        console.error(e);
+    }
+}
+
+loadHistory();
+
         let isEditing = false;
 
         function toggleEdit() {

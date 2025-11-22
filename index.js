@@ -16,6 +16,7 @@ const port = process.env.PORT || 3000;
 
 
 
+
 // ------------------ MONGODB SETUP ------------------
 const client = new MongoClient(process.env.MONGODB_URI);
 
@@ -80,7 +81,7 @@ app.use(async (req, res, next) => {
     if (skipPatterns.some(p => p.test(req.originalUrl))) return next();
 
     try {
-        const logsCollection = await getDB();
+        const logsCollection = await getVisitorsDB();
 
         await logsCollection.insertOne({
             ip,
@@ -233,12 +234,44 @@ Response:`;
         if (!response.ok) throw new Error("Gemini API error");
 
         const data = await response.json();
+      
+
+
+  const chatDB = await getChatDB();
+        await chatDB.insertOne({
+            userMessage: message,
+            botResponse: data,
+            timestamp: new Date()
+        });
+
+
+    
         res.json(data);
+
     } catch (error) {
         console.error("Chat API error:", error);
         res.status(500).json({ error: error.message });
     }
 });
+
+
+app.get("/api/chat-history", async (req, res) => {
+    try {
+        const chatDB = await getChatDB();
+        const history = await chatDB
+            .find({})
+            .sort({ _id: -1 })
+            .limit(50)
+            .toArray();
+
+        res.json(history);
+
+    } catch (error) {
+        console.error("History fetch error:", error);
+        res.status(500).json({ error: "Failed to fetch chat history" });
+    }
+});
+
 
 
 app.post("/api/ping", (req, res) => {
