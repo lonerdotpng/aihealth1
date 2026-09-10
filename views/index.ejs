@@ -16,6 +16,7 @@
 
 
     <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -557,6 +558,109 @@
         .result-section p {
             line-height: 1.6;
             margin-bottom: 10px;
+        }
+
+        .plan-chart-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 28px 20px 18px;
+            max-width: 460px;
+            width: 100%;
+            margin: 14px auto 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(102, 126, 234, 0.08);
+        }
+
+        .plan-chart-card h3 {
+            text-align: center;
+            color: #2d2d3a;
+            font-size: 1.4em;
+            margin-bottom: 4px;
+        }
+
+        .plan-chart-card .subtitle {
+            text-align: center;
+            color: #8a8a99;
+            font-size: 0.9em;
+            margin-bottom: 24px;
+        }
+
+        .plan-chart-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 28px;
+        }
+
+        .plan-center-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .plan-center-label .value {
+            display: block;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2d2d3a;
+        }
+
+        .plan-center-label .caption {
+            display: block;
+            font-size: 0.75em;
+            color: #9a9aa8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .plan-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .plan-legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: #f7f7fb;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .plan-legend-item:hover {
+            transform: translateX(4px);
+            background: #efeffb;
+        }
+
+        .plan-legend-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .plan-legend-name {
+            font-size: 0.92em;
+            color: #3a3a4a;
+            font-weight: 500;
+        }
+
+        .plan-legend-pct {
+            font-size: 0.92em;
+            font-weight: 700;
+            color: #2d2d3a;
         }
 
         .copy-btn {
@@ -1354,7 +1458,7 @@
                     <form id="healthForm">
                       <div class="healthplancon">
     <div id="speechBtn" class="speechBtn" type="button">
-        <img src="assets/r5.png">
+        <img src="/assets/r5.png">
     </div>
     <div class="input-section">
         <labelm1 for="disease">Health Condition or Disease</labelm1>
@@ -1740,8 +1844,13 @@
             }
 
             const data = await response.json();
-            return data.candidates[0].content.parts[0].text;
-        }
+
+                    // Server returns either { plan } (object) or { planText } (string)
+                    if (data.plan) return data.plan;
+                    if (data.planText) return data.planText;
+
+                    throw new Error('Unexpected response format from server');
+                }
 
         // Store the raw response for copy functionality
         let lastHealthPlanResponse = '';
@@ -1758,21 +1867,92 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await callGeminiAPI(null, disease, additionalInfo);
+                        const response = await callGeminiAPI(null, disease, additionalInfo);
 
-                // Store raw response
+                        // Store raw response or object for copy functionality
                 lastHealthPlanResponse = response;
 
-                // Format and display
-                const formattedHtml = formatHealthPlan(response);
-                results.innerHTML = formattedHtml + `
-            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-               
-                <button class=submitBtn"" onclick="copyHealthPlanFormatted()">Copy Plan</button>
-                <span class="copy-feedback" id="copy-feedback" style="display: none;"></span>
-            </div>
-        `;
-                results.style.display = 'block';
+                        // If server returned structured plan object
+                        if (typeof response === 'object' && response !== null) {
+                            const formattedHtml = renderHealthPlanFromObject(response);
+                            console.log('Rendered formattedHtml length:', formattedHtml.length);
+
+                            results.innerHTML = formattedHtml + `
+                                <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                                    <button class="submitBtn" onclick="copyHealthPlanFormatted()">Copy Plan</button>
+                                    <span class="copy-feedback" id="copy-feedback" style="display: none;"></span>
+                                </div>
+                            `;
+
+                            // If render returned nothing (edge case), show raw JSON so user can see the plan
+                            if (!formattedHtml || formattedHtml.trim() === '') {
+                                console.warn('Formatted HTML empty, showing raw JSON fallback');
+                                const rawHtml = `<div class="result-section"><h2>Plan (raw)</h2><pre>${escapeHtml(JSON.stringify(response, null, 2))}</pre></div>`;
+                                results.innerHTML = rawHtml + `
+                                    <div style="text-align: center; margin-top: 20px;"><button class="submitBtn" onclick="copyHealthPlanFormatted()">Copy Plan</button></div>`;
+                            }
+
+                            // Draw chart if metrics present
+                            if (response.metrics && response.metrics.labels && response.metrics.values) {
+                                // Delay to ensure canvas is in DOM
+                                setTimeout(() => {
+                                    try {
+                                        drawPieChart(response.metrics.labels, response.metrics.values);
+                                    } catch (e) {
+                                        console.error('Chart draw error:', e);
+                                    }
+                                }, 50);
+                            }
+
+                        } else {
+                            // Fallback: response is string — try to extract JSON from model output (handles bullets and code fences)
+                            const parsed = tryParsePlanString(response);
+                            if (parsed) {
+                                // Use structured renderer when possible
+                                lastHealthPlanResponse = parsed; // store object for copy
+                                const formattedHtml = renderHealthPlanFromObject(parsed);
+                                results.innerHTML = formattedHtml + `
+                                    <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                                        <button class="submitBtn" onclick="copyHealthPlanFormatted()">Copy Plan</button>
+                                        <span class="copy-feedback" id="copy-feedback" style="display: none;"></span>
+                                    </div>
+                                `;
+
+                                if (parsed.metrics && parsed.metrics.labels && parsed.metrics.values) {
+                                    setTimeout(() => {
+                                        try { drawPieChart(parsed.metrics.labels, parsed.metrics.values); } catch (e) { console.error('Chart draw error:', e); }
+                                    }, 50);
+                                }
+                            } else {
+                                // Fallback to legacy plain-text formatter
+                                const formattedHtml = formatHealthPlan(response);
+                                results.innerHTML = formattedHtml + `
+                                    <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                                        <button class="submitBtn" onclick="copyHealthPlanFormatted()">Copy Plan</button>
+                                        <span class="copy-feedback" id="copy-feedback" style="display: none;"></span>
+                                    </div>
+                                `;
+
+                                // If still empty, show raw JSON/text to ensure visibility
+                                if (!formattedHtml || formattedHtml.trim() === '') {
+                                    results.innerHTML = `<div class="result-section"><h2>Plan (raw)</h2><pre>${escapeHtml(String(response))}</pre></div>` + `
+                                        <div style="text-align: center; margin-top: 20px;"><button class="submitBtn" onclick="copyHealthPlanFormatted()">Copy Plan</button></div>`;
+                                }
+                            }
+                        }
+
+                        results.style.display = 'block';
+
+                // Ensure the results are visible to the user: scroll into view and add a short highlight
+                try {
+                    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    results.style.transition = 'box-shadow 0.6s ease';
+                    results.style.boxShadow = '0 0 0 4px rgba(102,126,234,0.12)';
+                    setTimeout(() => { results.style.boxShadow = ''; }, 1600);
+                } catch (e) {
+                    // ignore if scroll fails
+                    console.error('Scroll-to-results failed:', e);
+                }
             } catch (err) {
                 error.textContent = `Error: ${err.message}`;
                 error.style.display = 'block';
@@ -1803,8 +1983,75 @@
             });
         }
 
+        // Try to parse plan JSON from a raw string (handles bullets and markdown code fences)
+        function tryParsePlanString(raw) {
+            if (!raw || typeof raw !== 'string') return null;
+
+            // Remove leading bullet characters (e.g., '• ') added by some copy operations
+            let s = raw.replace(/^\s*•\s?/mg, '');
+
+            // Remove common markdown fences
+            s = s.replace(/```json/gi, '').replace(/```/g, '');
+
+            s = s.trim();
+
+            // Find JSON object substring
+            const first = s.indexOf('{');
+            const last = s.lastIndexOf('}');
+
+            if (first !== -1 && last !== -1 && last > first) {
+                let jsonStr = s.slice(first, last + 1);
+
+                // Try to fix trailing commas
+                jsonStr = jsonStr.replace(/,\s*([}\]])/g, '$1');
+
+                try {
+                    return JSON.parse(jsonStr);
+                } catch (e) {
+                    console.warn('tryParsePlanString JSON.parse failed:', e);
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
         // Convert HTML back to readable formatted text
         function convertHtmlToFormattedText(rawText) {
+            // If rawText is an object (structured plan), convert to readable text
+            if (typeof rawText === 'object' && rawText !== null) {
+                let out = '';
+                if (rawText.overview) {
+                    out += 'Overview\n';
+                    rawText.overview.forEach(l => out += '* ' + l + '\n');
+                    out += '\n';
+                }
+                if (rawText.diet_plan) {
+                    out += 'Diet Plan\n';
+                    rawText.diet_plan.forEach(l => out += '* ' + l + '\n');
+                    out += '\n';
+                }
+                if (rawText.exercise_recommendations) {
+                    out += 'Exercise Recommendations\n';
+                    rawText.exercise_recommendations.forEach(l => out += '* ' + l + '\n');
+                    out += '\n';
+                }
+                if (rawText.lifestyle_advice) {
+                    out += 'Lifestyle Advice\n';
+                    rawText.lifestyle_advice.forEach(l => out += '* ' + l + '\n');
+                    out += '\n';
+                }
+                if (rawText.important_considerations) {
+                    out += 'Important Considerations\n';
+                    rawText.important_considerations.forEach(l => out += '* ' + l + '\n');
+                    out += '\n';
+                }
+                if (rawText.summary) {
+                    out += 'Summary\n* ' + rawText.summary + '\n';
+                }
+                return out;
+            }
+
             let formatted = '';
             const lines = rawText.split('\n');
 
@@ -1845,7 +2092,6 @@
             feedback.textContent = message;
             feedback.style.display = 'inline-block';
 
-        
             setTimeout(() => {
                 buttons.forEach(btn => {
                     btn.classList.remove('copied');
@@ -1853,6 +2099,146 @@
                 });
                 feedback.style.display = 'none';
             }, 2000);
+        }
+
+        // Render structured plan object into attractive HTML
+        function renderHealthPlanFromObject(plan) {
+            const color = '#667eea';
+            let html = '';
+
+            // Header with summary
+            if (plan.summary) {
+                html += `<div class="result-section" style="border-left-color:${color}; text-align:center;"><h2>Personalized Summary</h2><p>${escapeHtml(plan.summary)}</p></div>`;
+            }
+
+            if (plan.overview && plan.overview.length) {
+                html += `<div class="result-section"><h2>Overview</h2><ul>${plan.overview.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>`;
+            }
+
+            if (plan.diet_plan && plan.diet_plan.length) {
+                html += `<div class="result-section"><h2>Diet Plan</h2><ul>${plan.diet_plan.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>`;
+            }
+
+            if (plan.exercise_recommendations && plan.exercise_recommendations.length) {
+                html += `<div class="result-section"><h2>Exercise Recommendations</h2><ul>${plan.exercise_recommendations.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>`;
+            }
+
+            if (plan.lifestyle_advice && plan.lifestyle_advice.length) {
+                html += `<div class="result-section"><h2>Lifestyle Advice</h2><ul>${plan.lifestyle_advice.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>`;
+            }
+
+            if (plan.important_considerations && plan.important_considerations.length) {
+                html += `<div class="result-section"><h2>Important Considerations</h2><ul>${plan.important_considerations.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>`;
+            }
+
+            // Modern chart card with custom legend and center label
+            if (plan.metrics && plan.metrics.labels && plan.metrics.values) {
+                html += `
+                    <div class="result-section">
+                        <h2>Focus Breakdown</h2>
+                        <div class="plan-chart-card">
+                            <h3>Focus Breakdown</h3>
+                            <p class="subtitle">Where this plan puts its emphasis</p>
+                            <div class="plan-chart-wrap">
+                                <canvas id="planChart" width="300" height="300" aria-label="Plan focus pie chart"></canvas>
+                                <div class="plan-center-label">
+                                    <span class="value" id="planCenterValue">100%</span>
+                                    <span class="caption">Total</span>
+                                </div>
+                            </div>
+                            <div class="plan-legend" id="planLegend"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // Small helper to escape HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Draw a modern pie chart with custom legend and center label
+        function drawPieChart(labels, values) {
+            const canvas = document.getElementById('planChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const palette = ['#7C6FF0', '#3FC1C0', '#FF9F6E', '#F45B93', '#6BCB77', '#5B8DEF'];
+            const colors = labels.map((_, i) => palette[i % palette.length]);
+            const total = values.reduce((sum, val) => sum + Number(val || 0), 0) || 100;
+
+            // Destroy existing chart instance if present (avoid duplicates)
+            if (window.__planChartInstance) {
+                try { window.__planChartInstance.destroy(); } catch (e) { /* ignore */ }
+            }
+
+            window.__planChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: '#ffffff',
+                        borderWidth: 3,
+                        hoverOffset: 12,
+                        borderRadius: 8,
+                        spacing: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '68%',
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 900,
+                        easing: 'easeOutQuart'
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#2d2d3a',
+                            padding: 12,
+                            cornerRadius: 10,
+                            titleFont: { size: 13, weight: '600' },
+                            bodyFont: { size: 13 },
+                            displayColors: true,
+                            boxPadding: 6,
+                            callbacks: {
+                                label: (context) => `${context.label}: ${context.parsed}%`
+                            }
+                        }
+                    }
+                }
+            });
+
+            const centerValue = document.getElementById('planCenterValue');
+            if (centerValue) {
+                centerValue.textContent = total + '%';
+            }
+
+            const legendEl = document.getElementById('planLegend');
+            if (legendEl) {
+                legendEl.innerHTML = labels.map((label, i) => `
+                    <div class="plan-legend-item">
+                        <div class="plan-legend-left">
+                            <span class="plan-dot" style="background:${colors[i]}"></span>
+                            <span class="plan-legend-name">${escapeHtml(label)}</span>
+                        </div>
+                        <span class="plan-legend-pct">${Number(values[i] || 0)}%</span>
+                    </div>
+                `).join('');
+            }
         }
 
 
