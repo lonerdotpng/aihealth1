@@ -4,17 +4,9 @@
     {
       "src": "index.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "assets/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
     {
       "src": "/(.*)",
       "dest": "index.js"
